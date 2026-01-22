@@ -526,6 +526,13 @@ impl Cell {
         self
     }
 
+    /// Parse cell attributes from XML.
+    ///
+    /// When the 'r' (cell reference) attribute is missing, the cell's position
+    /// is determined by `fallback_row` and `fallback_col`. Per ECMA-376,
+    /// cells without explicit references should be positioned sequentially.
+    ///
+    /// Returns the column number that was used (either from 'r' attribute or fallback).
     pub(crate) fn set_attributes<R: std::io::BufRead>(
         &mut self,
         reader: &mut Reader<R>,
@@ -534,14 +541,22 @@ impl Cell {
         stylesheet: &Stylesheet,
         empty_flag: bool,
         formula_shared_list: &mut HashMap<u32, (String, Vec<FormulaToken>)>,
-    ) {
+        fallback_row: u32,
+        fallback_col: u32,
+    ) -> u32 {
         let mut type_value: String = String::new();
         let mut cell_reference: String = String::new();
 
-        if let Some(v) = get_attribute(e, b"r") {
+        let actual_col = if let Some(v) = get_attribute(e, b"r") {
             cell_reference = v;
             self.coordinate.set_coordinate(&cell_reference);
-        }
+            self.coordinate.col_num()
+        } else {
+            // No 'r' attribute - use fallback position
+            self.coordinate.set_col_num(fallback_col);
+            self.coordinate.set_row_num(fallback_row);
+            fallback_col
+        };
 
         if let Some(v) = get_attribute(e, b"s") {
             let style = stylesheet.style(v.parse::<usize>().unwrap());
@@ -555,7 +570,7 @@ impl Cell {
         set_string_from_xml!(self, e, cell_meta_index, "cm");
 
         if empty_flag {
-            return;
+            return actual_col;
         }
 
         let mut string_value: String = String::new();
@@ -617,7 +632,7 @@ impl Cell {
                             self.set_value_crate(&string_value);
                         }
                     }
-                    b"c" => return,
+                    b"c" => return actual_col,
                     b"t" => {
                         reader.config_mut().trim_text(true);
                     }
@@ -629,6 +644,10 @@ impl Cell {
             }
             buf.clear();
         }
+        // Note: Loop only exits via return or panic, so this is unreachable
+        // but included for completeness
+        #[allow(unreachable_code)]
+        actual_col
     }
 
     pub(crate) fn write_to(

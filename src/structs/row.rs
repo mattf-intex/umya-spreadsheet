@@ -129,6 +129,14 @@ impl Row {
         &*self.style != &Style::default()
     }
 
+    /// Parse row attributes from XML.
+    ///
+    /// When the 'r' (row number) attribute is missing, the row's position
+    /// is determined by `fallback_row_num`. Per ECMA-376, rows without
+    /// explicit row numbers should be positioned sequentially.
+    ///
+    /// Returns the row number that was used (either from 'r' attribute or fallback).
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn set_attributes<R: std::io::BufRead>(
         &mut self,
         reader: &mut Reader<R>,
@@ -138,8 +146,14 @@ impl Row {
         stylesheet: &Stylesheet,
         formula_shared_list: &mut HashMap<u32, (String, Vec<FormulaToken>)>,
         empty_flag: bool,
-    ) {
-        set_string_from_xml!(self, e, row_num, "r");
+        fallback_row_num: u32,
+    ) -> u32 {
+        // Try to read row number from 'r' attribute, fall back to sequential position
+        if let Some(v) = get_attribute(e, b"r") {
+            self.row_num.set_value_string(v);
+        } else {
+            self.row_num.set_value(fallback_row_num);
+        }
         set_string_from_xml!(self, e, height, "ht");
         set_string_from_xml!(self, e, thick_bot, "thickBot");
         set_string_from_xml!(self, e, custom_height, "customHeight");
@@ -156,33 +170,50 @@ impl Row {
             self.set_style(style);
         }
 
+        let row_num = *self.row_num.get_value();
+
         if empty_flag {
-            return;
+            return row_num;
         }
+
+        // Track column position for cells without explicit 'r' attribute
+        // Per ECMA-376, cells without 'r' should be positioned sequentially
+        let mut col_index: u32 = 1;
 
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
                 if e.name().into_inner() == b"c" {
                     let mut obj = Cell::default();
-                    obj.set_attributes(reader, e, shared_string_table, stylesheet, true, formula_shared_list);
+                    let actual_col = obj.set_attributes(
+                        reader, e, shared_string_table, stylesheet, true, formula_shared_list,
+                        row_num, col_index
+                    );
+                    col_index = actual_col + 1;
                     cells.set_fast(obj);
                 }
             },
             Event::Start(ref e) => {
                 if e.name().into_inner() == b"c" {
                     let mut obj = Cell::default();
-                    obj.set_attributes(reader, e, shared_string_table, stylesheet, false, formula_shared_list);
+                    let actual_col = obj.set_attributes(
+                        reader, e, shared_string_table, stylesheet, false, formula_shared_list,
+                        row_num, col_index
+                    );
+                    col_index = actual_col + 1;
                     cells.set_fast(obj);
                 }
             },
             Event::End(ref e) => {
                 if e.name().into_inner() == b"row" {
-                    return
+                    return row_num;
                 }
             },
             Event::Eof => panic!("Error: Could not find {} end element", "row")
         );
+        // Note: Loop only exits via return or panic
+        #[allow(unreachable_code)]
+        row_num
     }
 
     pub(crate) fn write_to(

@@ -30,6 +30,9 @@ pub(crate) fn read(
     let mut reader = Reader::from_reader(data);
     reader.config_mut().trim_text(true);
     let mut formula_shared_list: HashMap<u32, (String, Vec<FormulaToken>)> = HashMap::new();
+    // Track row index for rows without explicit 'r' attribute
+    // Per ECMA-376, rows without row numbers should be positioned sequentially
+    let mut row_index: u32 = 1;
     xml_read_loop!(
         reader,
         Event::Start(ref e) => match e.name().into_inner() {
@@ -67,7 +70,7 @@ pub(crate) fn read(
             }
             b"row" => {
                 let mut obj = Row::default();
-                obj.set_attributes(
+                let actual_row = obj.set_attributes(
                     &mut reader,
                     e,
                     worksheet.get_cell_collection_crate_mut(),
@@ -75,7 +78,9 @@ pub(crate) fn read(
                     stylesheet,
                     &mut formula_shared_list,
                     false,
+                    row_index,
                 );
+                row_index = actual_row + 1;
                 worksheet.set_row_dimension(obj);
             }
             b"autoFilter" => {
@@ -167,7 +172,7 @@ pub(crate) fn read(
             }
             b"row" => {
                 let mut obj = Row::default();
-                obj.set_attributes(
+                let actual_row = obj.set_attributes(
                     &mut reader,
                     e,
                     worksheet.get_cell_collection_crate_mut(),
@@ -175,7 +180,9 @@ pub(crate) fn read(
                     stylesheet,
                     &mut formula_shared_list,
                     true,
+                    row_index,
                 );
+                row_index = actual_row + 1;
                 worksheet.set_row_dimension(obj);
             }
             b"autoFilter" => {
@@ -229,12 +236,14 @@ pub(crate) fn read_lite(
 
     let mut cells = Cells::default();
     let mut formula_shared_list: HashMap<u32, (String, Vec<FormulaToken>)> = HashMap::new();
+    // Track row index for rows without explicit 'r' attribute
+    let mut row_index: u32 = 1;
     xml_read_loop!(
         reader,
         Event::Start(ref e) => {
             if e.name().into_inner() == b"row" {
                 let mut obj = Row::default();
-                obj.set_attributes(
+                let actual_row = obj.set_attributes(
                     &mut reader,
                     e,
                     &mut cells,
@@ -242,13 +251,15 @@ pub(crate) fn read_lite(
                     stylesheet,
                     &mut formula_shared_list,
                     false,
+                    row_index,
                 );
+                row_index = actual_row + 1;
             }
         },
         Event::Empty(ref e) => {
             if e.name().into_inner() == b"row" {
                 let mut obj = Row::default();
-                obj.set_attributes(
+                let actual_row = obj.set_attributes(
                     &mut reader,
                     e,
                     &mut cells,
@@ -256,7 +267,9 @@ pub(crate) fn read_lite(
                     stylesheet,
                     &mut formula_shared_list,
                     true,
+                    row_index,
                 );
+                row_index = actual_row + 1;
             }
         },
         Event::Eof => break,

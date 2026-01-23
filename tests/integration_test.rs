@@ -2106,3 +2106,44 @@ fn issue_293() {
     let path = std::path::Path::new("./tests/result_files/r_issue_293.xlsx");
     let _ = umya_spreadsheet::writer::xlsx::write(&book, path);
 }
+
+/// Test that workbook.xml with non-self-closing <sheet> elements is parsed correctly.
+/// Some XLSX generators write <sheet name="..." sheetId="..." r:id="..."></sheet>
+/// instead of self-closing <sheet name="..." sheetId="..." r:id="..."/>.
+/// Both forms are valid XML per the ECMA-376 specification.
+#[test]
+fn non_self_closing_sheet_tags() {
+    // Test with regular read
+    let path = std::path::Path::new("./tests/test_files/non_self_closing_sheet_tags.xlsx");
+    let book = umya_spreadsheet::reader::xlsx::read(path).unwrap();
+
+    assert_eq!(book.get_sheet_count(), 2);
+    assert_eq!(book.get_sheet(&0).unwrap().get_name(), "Data");
+    assert_eq!(book.get_sheet(&1).unwrap().get_name(), "Summary");
+
+    // Verify sheet 1 cell data
+    let sheet1 = book.get_sheet(&0).unwrap();
+    assert_eq!(sheet1.get_value("A1"), "Name");
+    assert_eq!(sheet1.get_value("B1"), "Value");
+    assert_eq!(sheet1.get_value("C1"), "Category");
+    assert_eq!(sheet1.get_value("A2"), "Alpha");
+    assert_eq!(sheet1.get_value("B2"), "100");
+    assert_eq!(sheet1.get_value("C2"), "Group A");
+    assert_eq!(sheet1.get_value("A3"), "Beta");
+    assert_eq!(sheet1.get_value("B3"), "200");
+    assert_eq!(sheet1.get_value("C3"), "Group B");
+
+    // Verify sheet 2 cell data
+    let sheet2 = book.get_sheet(&1).unwrap();
+    assert_eq!(sheet2.get_value("A1"), "Category");
+    assert_eq!(sheet2.get_value("B1"), "Total");
+    assert_eq!(sheet2.get_value("A2"), "Group A");
+    assert_eq!(sheet2.get_value("B2"), "300");
+
+    // Test with lazy_read
+    let mut book_lazy = umya_spreadsheet::reader::xlsx::lazy_read(path).unwrap();
+    assert_eq!(book_lazy.get_sheet_count(), 2);
+    // get_sheet_mut auto-deserializes the worksheet
+    assert_eq!(book_lazy.get_sheet_mut(&0).unwrap().get_name(), "Data");
+    assert_eq!(book_lazy.get_sheet_mut(&1).unwrap().get_name(), "Summary");
+}

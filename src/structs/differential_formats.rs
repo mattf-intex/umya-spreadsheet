@@ -62,14 +62,14 @@ impl DifferentialFormats {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"dxf" {
+                if e.name().local_name().into_inner() == b"dxf" {
                     let mut obj = DifferentialFormat::default();
                     obj.set_attributes(reader, e);
                     self.set_differential_format(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"dxfs" {
+                if e.name().local_name().into_inner() == b"dxfs" {
                     return
                 }
             },

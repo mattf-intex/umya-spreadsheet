@@ -42,14 +42,14 @@ impl PivotFields {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"pivotField" {
+                if e.name().local_name().into_inner() == b"pivotField" {
                     let mut obj = PivotField::default();
                     obj.set_attributes(reader, e);
                     self.add_list_mut(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"pivotFields" {
+                if e.name().local_name().into_inner() == b"pivotFields" {
                     return
                 }
             },

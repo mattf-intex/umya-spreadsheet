@@ -92,13 +92,13 @@ impl ParagraphProperties {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                b"a:defRPr" => {
+                match e.name().local_name().into_inner() {
+                b"defRPr" => {
                     let mut obj = RunProperties::default();
                     obj.set_attributes(reader, e, false);
                     self.set_default_run_properties(obj);
                 }
-                b"a:lnSpc" => {
+                b"lnSpc" => {
                     let mut obj = LineSpacing::default();
                     obj.set_attributes(reader, e);
                     self.set_line_spacing(obj);
@@ -107,14 +107,14 @@ impl ParagraphProperties {
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:defRPr" {
+                if e.name().local_name().into_inner() == b"defRPr" {
                     let mut obj = RunProperties::default();
                     obj.set_attributes(reader, e, true);
                     self.set_default_run_properties(obj);
                 }
             },
             Event::End(ref e) => {
-                if  e.name().into_inner() == b"a:pPr" {
+                if  e.name().local_name().into_inner() == b"pPr" {
                     return
                 }
             },

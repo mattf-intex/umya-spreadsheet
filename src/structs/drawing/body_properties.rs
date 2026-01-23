@@ -211,14 +211,14 @@ impl BodyProperties {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:spAutoFit" {
+                if e.name().local_name().into_inner() == b"spAutoFit" {
                     let mut obj = ShapeAutoFit::default();
                     obj.set_attributes(reader, e);
                     self.set_shape_auto_fit(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:bodyPr" {
+                if e.name().local_name().into_inner() == b"bodyPr" {
                      return
                 }
             },

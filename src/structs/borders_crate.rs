@@ -57,20 +57,20 @@ impl BordersCrate {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"border" {
+                if e.name().local_name().into_inner() == b"border" {
                     let obj = Borders::default();
                     self.set_borders(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"border" {
+                if e.name().local_name().into_inner() == b"border" {
                     let mut obj = Borders::default();
                     obj.set_attributes(reader, e);
                     self.set_borders(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"borders" {
+                if e.name().local_name().into_inner() == b"borders" {
                     return
                 }
             },

@@ -395,7 +395,7 @@ impl Cell {
         loop {
             match reader.read_event_into(&mut buf) {
                 Ok(Event::Text(e)) => string_value = e.unescape().unwrap().to_string(),
-                Ok(Event::Start(ref e)) => match e.name().into_inner() {
+                Ok(Event::Start(ref e)) => match e.name().local_name().into_inner() {
                     b"f" => {
                         let mut obj = CellFormula::default();
                         obj.set_attributes(reader, e, false, &cell_reference, formula_shared_list);
@@ -413,13 +413,13 @@ impl Cell {
                     _ => (),
                 },
                 Ok(Event::Empty(ref e)) => {
-                    if e.name().into_inner() == b"f" {
+                    if e.name().local_name().into_inner() == b"f" {
                         let mut obj = CellFormula::default();
                         obj.set_attributes(reader, e, true, &cell_reference, formula_shared_list);
                         self.cell_value.set_formula_obj(obj);
                     }
                 }
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
                     b"v" => match type_value.as_str() {
                         "str" => {
                             self.set_value_string_crate(&string_value);

@@ -82,18 +82,18 @@ impl PatternFill {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:fgClr" => {
+                match e.name().local_name().into_inner() {
+                    b"fgClr" => {
                         self.foreground_color.set_attributes(reader, e);
                     },
-                    b"a:bgClr" => {
+                    b"bgClr" => {
                         self.background_color.set_attributes(reader, e);
                     },
                     _ => (),
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:pattFill" {
+                if e.name().local_name().into_inner() == b"pattFill" {
                     return
                 }
             },

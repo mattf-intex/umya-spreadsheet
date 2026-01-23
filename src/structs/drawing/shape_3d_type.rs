@@ -69,13 +69,13 @@ impl Shape3DType {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:bevelT" => {
+                match e.name().local_name().into_inner() {
+                    b"bevelT" => {
                         let mut obj = BevelTop::default();
                         obj.set_attributes(reader, e);
                         self.set_bevel_top(obj);
                     }
-                    b"a:bevelB" => {
+                    b"bevelB" => {
                         let mut obj = BevelBottom::default();
                         obj.set_attributes(reader, e);
                         self.set_bevel_bottom(obj);
@@ -84,7 +84,7 @@ impl Shape3DType {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:sp3d" {
+                if e.name().local_name().into_inner() == b"sp3d" {
                     return
                 }
             },

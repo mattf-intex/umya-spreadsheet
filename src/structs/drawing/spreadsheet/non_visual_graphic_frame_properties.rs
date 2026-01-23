@@ -65,12 +65,12 @@ impl NonVisualGraphicFrameProperties {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"xdr:cNvPr" => {
+                match e.name().local_name().into_inner() {
+                    b"cNvPr" => {
                         self.non_visual_drawing_properties
                             .set_attributes(reader, e, true);
                     },
-                    b"xdr:cNvGraphicFramePr" => {
+                    b"cNvGraphicFramePr" => {
                         self.non_visual_graphic_frame_drawing_properties
                             .set_attributes(reader, e);
                     },
@@ -78,13 +78,13 @@ impl NonVisualGraphicFrameProperties {
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"xdr:cNvPr" {
+                if e.name().local_name().into_inner() == b"cNvPr" {
                     self.non_visual_drawing_properties
                         .set_attributes(reader, e, false);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:nvGraphicFramePr" {
+                if e.name().local_name().into_inner() == b"nvGraphicFramePr" {
                     return
                 }
             },

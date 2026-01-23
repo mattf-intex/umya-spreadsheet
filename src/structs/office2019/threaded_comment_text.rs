@@ -35,7 +35,7 @@ impl ThreadedCommentText {
                 self.set_value(e.unescape().unwrap());
             },
             Event::End(ref e) => {
-                if e.name().0 == b"text" {
+                if e.name().local_name().into_inner() == b"text" {
                     return
                 }
             },

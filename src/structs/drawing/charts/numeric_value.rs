@@ -32,7 +32,7 @@ impl NumericValue {
                 self.set_text(e.unescape().unwrap());
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:v" {
+                if e.name().local_name().into_inner() == b"v" {
                     return;
                 }
             },

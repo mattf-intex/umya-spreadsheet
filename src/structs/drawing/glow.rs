@@ -47,14 +47,14 @@ impl Glow {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"a:schemeClr" {
+                if e.name().local_name().into_inner() == b"schemeClr" {
                     let mut obj = SchemeColor::default();
                     obj.set_attributes(reader, e, false);
                     self.set_scheme_color(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:glow" {
+                if e.name().local_name().into_inner() == b"glow" {
                     return;
                 }
             },

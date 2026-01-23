@@ -49,21 +49,21 @@ impl BackWall {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"c:thickness" {
+                if e.name().local_name().into_inner() == b"thickness" {
                     let mut obj = Thickness::default();
                     obj.set_attributes(reader, e);
                     self.set_thickness(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"c:spPr" {
+                if e.name().local_name().into_inner() == b"spPr" {
                     let mut obj = ShapeProperties::default();
                     obj.set_attributes(reader, e);
                     self.set_shape_properties(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:backWall" {
+                if e.name().local_name().into_inner() == b"backWall" {
                     return;
                 }
             },

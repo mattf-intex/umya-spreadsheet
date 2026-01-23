@@ -37,8 +37,8 @@ impl GroupShapeProperties {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().0 {
-                    b"a:xfrm" => {
+                match e.name().local_name().into_inner() {
+                    b"xfrm" => {
                         let mut obj = Transform2D::default();
                         obj.set_attributes(reader, e);
                         self.set_transform2d(obj);
@@ -47,7 +47,7 @@ impl GroupShapeProperties {
                 }
             },
             Event::End(ref e) => {
-                if e.name().0 == b"xdr:grpSpPr" {
+                if e.name().local_name().into_inner() == b"grpSpPr" {
                     return;
                 }
             },

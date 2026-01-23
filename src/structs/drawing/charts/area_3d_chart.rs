@@ -102,14 +102,14 @@ impl Area3DChart {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"c:ser" => {
+                match e.name().local_name().into_inner() {
+                    b"ser" => {
                         let mut obj = AreaChartSeries::default();
                         obj.set_attributes(reader, e);
                         self.get_area_chart_series_list_mut()
                             .add_area_chart_series(obj);
                         }
-                    b"c:dLbls" => {
+                    b"dLbls" => {
                         let mut obj = DataLabels::default();
                         obj.set_attributes(reader, e);
                         self.set_data_labels(obj);
@@ -118,14 +118,14 @@ impl Area3DChart {
                 }
             },
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"c:grouping" => {
+                match e.name().local_name().into_inner() {
+                    b"grouping" => {
                         self.grouping.set_attributes(reader, e);
                     }
-                    b"c:varyColors" => {
+                    b"varyColors" => {
                         self.vary_colors.set_attributes(reader, e);
                     }
-                    b"c:axId" => {
+                    b"axId" => {
                         let mut obj = AxisId::default();
                         obj.set_attributes(reader, e);
                         self.add_axis_id(obj);
@@ -134,7 +134,7 @@ impl Area3DChart {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:area3DChart" {
+                if e.name().local_name().into_inner() == b"area3DChart" {
                     return;
                 }
             },

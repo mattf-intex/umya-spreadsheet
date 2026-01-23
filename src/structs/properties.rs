@@ -224,18 +224,18 @@ impl Properties {
             Event::Text(e) => {
                 value = e.unescape().unwrap().to_string();
             },
-            Event::End(ref e) => match e.name().into_inner() {
-                b"dc:title" => {self.set_title(std::mem::take(&mut value));},
-                b"dc:subject" => {self.set_subject(std::mem::take(&mut value));},
-                b"dc:creator" => {self.set_creator(std::mem::take(&mut value));},
-                b"cp:keywords" => {self.set_keywords(std::mem::take(&mut value));},
-                b"dc:description" => {self.set_description(std::mem::take(&mut value));},
-                b"cp:lastModifiedBy" => {self.set_last_modified_by(std::mem::take(&mut value));},
-                b"cp:revision" => {self.set_revision(std::mem::take(&mut value));},
-                b"dcterms:created" => {self.set_created(std::mem::take(&mut value));},
-                b"dcterms:modified" => {self.set_modified(std::mem::take(&mut value));},
-                b"cp:category" => {self.set_category(std::mem::take(&mut value));},
-                b"cp:version" => {self.set_version(std::mem::take(&mut value));},
+            Event::End(ref e) => match e.name().local_name().into_inner() {
+                b"title" => {self.set_title(std::mem::take(&mut value));},
+                b"subject" => {self.set_subject(std::mem::take(&mut value));},
+                b"creator" => {self.set_creator(std::mem::take(&mut value));},
+                b"keywords" => {self.set_keywords(std::mem::take(&mut value));},
+                b"description" => {self.set_description(std::mem::take(&mut value));},
+                b"lastModifiedBy" => {self.set_last_modified_by(std::mem::take(&mut value));},
+                b"revision" => {self.set_revision(std::mem::take(&mut value));},
+                b"created" => {self.set_created(std::mem::take(&mut value));},
+                b"modified" => {self.set_modified(std::mem::take(&mut value));},
+                b"category" => {self.set_category(std::mem::take(&mut value));},
+                b"version" => {self.set_version(std::mem::take(&mut value));},
                 b"Manager" => {self.set_manager(std::mem::take(&mut value));},
                 b"Company" => {self.set_company(std::mem::take(&mut value));},
                 _ => {}
@@ -253,7 +253,7 @@ impl Properties {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner(){
+                match e.name().local_name().into_inner(){
                     b"Manager" => {value = String::new();},
                     b"Company" => {value = String::new();},
                     _ => {}
@@ -262,7 +262,7 @@ impl Properties {
             Event::Text(e) => {
                 value = e.unescape().unwrap().to_string();
             },
-            Event::End(ref e) => match e.name().into_inner() {
+            Event::End(ref e) => match e.name().local_name().into_inner() {
                 b"Manager" => {self.set_manager(std::mem::take(&mut value));}
                 b"Company" => {self.set_company(std::mem::take(&mut value));}
                 _ =>{}

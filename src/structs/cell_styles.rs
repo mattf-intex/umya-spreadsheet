@@ -38,14 +38,14 @@ impl CellStyles {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"cellStyle" {
+                if e.name().local_name().into_inner() == b"cellStyle" {
                     let mut obj = CellStyle::default();
                     obj.set_attributes(reader, e);
                     self.add_cell_style(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"cellStyles" {
+                if e.name().local_name().into_inner() == b"cellStyles" {
                     return
                 }
             },

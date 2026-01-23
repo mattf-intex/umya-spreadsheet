@@ -124,45 +124,45 @@ impl FontCollectionType {
         let mut buf = Vec::new();
         loop {
             match reader.read_event_into(&mut buf) {
-                Ok(Event::Empty(ref e)) => match e.name().into_inner() {
-                    b"a:latin" => {
+                Ok(Event::Empty(ref e)) => match e.name().local_name().into_inner() {
+                    b"latin" => {
                         self.latin_font.set_attributes(reader, e, true);
                     }
-                    b"a:ea" => {
+                    b"ea" => {
                         self.east_asian_font.set_attributes(reader, e, true);
                     }
-                    b"a:cs" => {
+                    b"cs" => {
                         self.complex_script_font.set_attributes(reader, e, true);
                     }
-                    b"a:font" => {
+                    b"font" => {
                         let mut obj = SupplementalFont::default();
                         obj.set_attributes(reader, e, true);
                         self.add_supplemental_font_list(obj);
                     }
                     _ => (),
                 },
-                Ok(Event::Start(ref e)) => match e.name().into_inner() {
-                    b"a:latin" => {
+                Ok(Event::Start(ref e)) => match e.name().local_name().into_inner() {
+                    b"latin" => {
                         self.latin_font.set_attributes(reader, e, false);
                     }
-                    b"a:ea" => {
+                    b"ea" => {
                         self.east_asian_font.set_attributes(reader, e, false);
                     }
-                    b"a:cs" => {
+                    b"cs" => {
                         self.complex_script_font.set_attributes(reader, e, false);
                     }
-                    b"a:font" => {
+                    b"font" => {
                         let mut obj = SupplementalFont::default();
                         obj.set_attributes(reader, e, false);
                         self.add_supplemental_font_list(obj);
                     }
                     _ => (),
                 },
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
-                    b"a:majorFont" => {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
+                    b"majorFont" => {
                         return;
                     }
-                    b"a:minorFont" => {
+                    b"minorFont" => {
                         return;
                     }
                     _ => (),

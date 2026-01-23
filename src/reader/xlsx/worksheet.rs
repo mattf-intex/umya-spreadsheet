@@ -35,7 +35,7 @@ pub(crate) fn read(
     let mut row_index: u32 = 1;
     xml_read_loop!(
         reader,
-        Event::Start(ref e) => match e.name().into_inner() {
+        Event::Start(ref e) => match e.name().local_name().into_inner() {
             b"sheetPr" => {
                 for a in e.attributes().with_checks(false) {
                     match a {
@@ -106,7 +106,7 @@ pub(crate) fn read(
                 obj.set_attributes(&mut reader, e);
                 worksheet.set_data_validations(obj);
             }
-            b"x14:dataValidations" => {
+            b"dataValidations" => {
                 let mut obj = DataValidations2010::default();
                 obj.set_attributes(&mut reader, e);
                 worksheet.set_data_validations_2010(obj);
@@ -137,7 +137,7 @@ pub(crate) fn read(
             }
             _ => (),
         },
-        Event::Empty(ref e) => match e.name().into_inner() {
+        Event::Empty(ref e) => match e.name().local_name().into_inner() {
             b"sheetPr" => {
                 for a in e.attributes().with_checks(false) {
                     match a {
@@ -241,7 +241,7 @@ pub(crate) fn read_lite(
     xml_read_loop!(
         reader,
         Event::Start(ref e) => {
-            if e.name().into_inner() == b"row" {
+            if e.name().local_name().into_inner() == b"row" {
                 let mut obj = Row::default();
                 let actual_row = obj.set_attributes(
                     &mut reader,
@@ -257,7 +257,7 @@ pub(crate) fn read_lite(
             }
         },
         Event::Empty(ref e) => {
-            if e.name().into_inner() == b"row" {
+            if e.name().local_name().into_inner() == b"row" {
                 let mut obj = Row::default();
                 let actual_row = obj.set_attributes(
                     &mut reader,

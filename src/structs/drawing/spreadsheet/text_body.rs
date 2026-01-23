@@ -70,18 +70,18 @@ impl TextBody {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:p" => {
+                match e.name().local_name().into_inner() {
+                    b"p" => {
                         let mut paragraph = Paragraph::default();
                         paragraph.set_attributes(reader, e);
                         self.add_paragraph(paragraph);
                     }
-                    b"a:bodyPr" => {
+                    b"bodyPr" => {
                         let mut body_properties = BodyProperties::default();
                         body_properties.set_attributes(reader, e, false);
                         self.set_body_properties(body_properties);
                     }
-                    b"a:lstStyle" => {
+                    b"lstStyle" => {
                         let mut obj = ListStyle::default();
                         obj.set_attributes(reader, e);
                         self.set_list_style(obj);
@@ -90,14 +90,14 @@ impl TextBody {
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:bodyPr" {
+                if e.name().local_name().into_inner() == b"bodyPr" {
                     let mut body_properties = BodyProperties::default();
                     body_properties.set_attributes(reader, e, true);
                     self.set_body_properties(body_properties);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:txBody" {
+                if e.name().local_name().into_inner() == b"txBody" {
                     return;
                 }
             },

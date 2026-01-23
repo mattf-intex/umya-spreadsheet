@@ -70,13 +70,13 @@ impl FillStyleList {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:solidFill" => {
+                match e.name().local_name().into_inner() {
+                    b"solidFill" => {
                         let mut obj = SolidFill::default();
                         obj.set_attributes(reader, e);
                         self.solid_fill.push(obj);
                     }
-                    b"a:gradFill" => {
+                    b"gradFill" => {
                         let mut obj = GradientFill::default();
                         obj.set_attributes(reader, e);
                         self.gradient_fill_collection.push(obj);
@@ -85,7 +85,7 @@ impl FillStyleList {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:fillStyleLst" {
+                if e.name().local_name().into_inner() == b"fillStyleLst" {
                     return
                 }
             },

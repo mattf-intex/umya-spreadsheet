@@ -119,19 +119,19 @@ impl Shape {
         xml_read_loop!(
             reader,
                 Event::Start(ref e) => {
-                    match e.name().into_inner() {
-                        b"xdr:nvSpPr" => {
+                    match e.name().local_name().into_inner() {
+                        b"nvSpPr" => {
                             self.non_visual_shape_properties.set_attributes(reader, e);
                         }
-                        b"xdr:spPr" => {
+                        b"spPr" => {
                             self.shape_properties.set_attributes(reader, e, drawing_relationships);
                         }
-                        b"xdr:style" => {
+                        b"style" => {
                             let mut obj = ShapeStyle::default();
                             obj.set_attributes(reader, e);
                             self.set_shape_style(obj);
                         }
-                        b"xdr:txBody" => {
+                        b"txBody" => {
                             let mut obj = TextBody::default();
                             obj.set_attributes(reader, e);
                             self.set_text_body(obj);
@@ -140,7 +140,7 @@ impl Shape {
                     }
                 },
                 Event::End(ref e) => {
-                    if e.name().into_inner() == b"xdr:sp" {
+                    if e.name().local_name().into_inner() == b"sp" {
                         return;
                     }
                 },

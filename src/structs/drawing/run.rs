@@ -46,12 +46,12 @@ impl Run {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().0 == b"a:rPr" {
+                if e.name().local_name().into_inner() == b"rPr" {
                     self.run_properties.set_attributes(reader, e, false);
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().0 == b"a:rPr" {
+                if e.name().local_name().into_inner() == b"rPr" {
                     self.run_properties.set_attributes(reader, e, true);
                 }
             },
@@ -59,7 +59,7 @@ impl Run {
                 self.set_text(e.unescape().unwrap());
             },
             Event::End(ref e) => {
-                if e.name().0 == b"a:r" {
+                if e.name().local_name().into_inner() == b"r" {
                     return;
                 }
             },

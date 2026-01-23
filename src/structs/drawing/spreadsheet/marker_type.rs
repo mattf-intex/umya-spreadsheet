@@ -93,21 +93,21 @@ impl MarkerType {
         loop {
             match reader.read_event_into(&mut buf) {
                 Ok(Event::Text(e)) => string_value = e.unescape().unwrap().to_string(),
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
-                    b"xdr:col" => {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
+                    b"col" => {
                         self.col = string_value.parse::<u32>().unwrap();
                     }
-                    b"xdr:colOff" => {
+                    b"colOff" => {
                         self.col_off = string_value.parse::<i32>().unwrap();
                     }
-                    b"xdr:row" => {
+                    b"row" => {
                         self.row = string_value.parse::<u32>().unwrap();
                     }
-                    b"xdr:rowOff" => {
+                    b"rowOff" => {
                         self.row_off = string_value.parse::<i32>().unwrap();
                     }
-                    b"xdr:from" => return,
-                    b"xdr:to" => return,
+                    b"from" => return,
+                    b"to" => return,
                     _ => (),
                 },
                 Ok(Event::Eof) => panic!("Error: Could not find {} end element", "xdr:from,xdr:to"),

@@ -90,24 +90,24 @@ impl BlipFill {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:blip" => {
+                match e.name().local_name().into_inner() {
+                    b"blip" => {
                         self.blip
                             .set_attributes(reader, e, drawing_relationships.unwrap(), false);
                         }
-                    b"a:stretch" => {
+                    b"stretch" => {
                         self.stretch.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:blip" => {
+                match e.name().local_name().into_inner() {
+                    b"blip" => {
                         self.blip
                             .set_attributes(reader, e, drawing_relationships.unwrap(), true);
                         }
-                    b"a:srcRect" => {
+                    b"srcRect" => {
                         let mut source_rectangle = SourceRectangle::default();
                         source_rectangle.set_attributes(reader, e);
                         self.set_source_rectangle(source_rectangle);
@@ -116,7 +116,7 @@ impl BlipFill {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:blipFill" {
+                if e.name().local_name().into_inner() == b"blipFill" {
                     return;
                 }
             },

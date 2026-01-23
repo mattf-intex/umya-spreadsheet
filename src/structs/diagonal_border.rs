@@ -90,13 +90,13 @@ impl DiagonalBorder {
         let mut buf = Vec::new();
         loop {
             match reader.read_event_into(&mut buf) {
-                Ok(Event::Empty(ref e)) => match e.name().into_inner() {
+                Ok(Event::Empty(ref e)) => match e.name().local_name().into_inner() {
                     b"color" => {
                         &mut self.color.set_attributes(reader, e);
                     }
                     _ => (),
                 },
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
                     b"diagonal" => return,
                     _ => (),
                 },

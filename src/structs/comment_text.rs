@@ -96,7 +96,7 @@ impl CommentText {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
+                match e.name().local_name().into_inner() {
                     b"t" => {
                         let mut obj = Text::default();
                         obj.set_attributes(reader, e);
@@ -115,7 +115,7 @@ impl CommentText {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"text" {
+                if e.name().local_name().into_inner() == b"text" {
                     if !vec_text_element.is_empty() {
                         let mut obj = RichText::default();
                         obj.set_rich_text_elements(vec_text_element);

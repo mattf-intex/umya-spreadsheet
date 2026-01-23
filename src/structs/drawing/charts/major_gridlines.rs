@@ -39,14 +39,14 @@ impl MajorGridlines {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"c:spPr" {
+                if e.name().local_name().into_inner() == b"spPr" {
                     let mut obj = ShapeProperties::default();
                     obj.set_attributes(reader, e);
                     self.set_shape_properties(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:majorGridlines" {
+                if e.name().local_name().into_inner() == b"majorGridlines" {
                     return
                 }
             },

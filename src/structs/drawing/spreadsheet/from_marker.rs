@@ -95,20 +95,20 @@ impl FromMarker {
         loop {
             match reader.read_event_into(&mut buf) {
                 Ok(Event::Text(e)) => string_value = e.unescape_and_decode(&reader).unwrap(),
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
-                    b"xdr:col" => {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
+                    b"col" => {
                         self.col = string_value.parse::<usize>().unwrap();
                     }
-                    b"xdr:colOff" => {
+                    b"colOff" => {
                         self.col_off = string_value.parse::<usize>().unwrap();
                     }
-                    b"xdr:row" => {
+                    b"row" => {
                         self.row = string_value.parse::<usize>().unwrap();
                     }
-                    b"xdr:rowOff" => {
+                    b"rowOff" => {
                         self.row_off = string_value.parse::<usize>().unwrap();
                     }
-                    b"xdr:from" => return,
+                    b"from" => return,
                     _ => (),
                 },
                 Ok(Event::Eof) => panic!("Error: Could not find {} end element", "xdr:from"),

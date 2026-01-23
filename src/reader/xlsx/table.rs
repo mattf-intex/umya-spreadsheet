@@ -21,7 +21,7 @@ pub(crate) fn read(
     let mut string_value = String::new();
     loop {
         match reader.read_event_into(&mut buf) {
-            Ok(Event::Empty(ref e)) => match e.name().into_inner() {
+            Ok(Event::Empty(ref e)) => match e.name().local_name().into_inner() {
                 b"tableColumn" => {
                     table_column = TableColumn::default();
                     for a in e.attributes().with_checks(false) {
@@ -95,7 +95,7 @@ pub(crate) fn read(
                 _ => (),
             },
             Ok(Event::Text(e)) => string_value = e.unescape().unwrap().to_string(),
-            Ok(Event::Start(ref e)) => match e.name().into_inner() {
+            Ok(Event::Start(ref e)) => match e.name().local_name().into_inner() {
                 b"table" => {
                     for a in e.attributes().with_checks(false) {
                         match a {
@@ -152,7 +152,7 @@ pub(crate) fn read(
                 }
                 _ => (),
             },
-            Ok(Event::End(ref e)) => match e.name().into_inner() {
+            Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
                 b"calculatedColumnFormula" => {
                     table_column.set_calculated_column_formula(string_value);
                     string_value = String::new();

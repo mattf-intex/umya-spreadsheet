@@ -39,19 +39,19 @@ impl PercentageType {
         xml_read_loop!(
             reader,
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:lum" {
+                if e.name().local_name().into_inner() == b"lum" {
                     return;
                 }
-                if e.name().into_inner() == b"a:lumMod" {
+                if e.name().local_name().into_inner() == b"lumMod" {
                     return;
                 }
-                if e.name().into_inner() == b"a:lumOff" {
+                if e.name().local_name().into_inner() == b"lumOff" {
                     return;
                 }
-                if e.name().into_inner() == b"a:sat" {
+                if e.name().local_name().into_inner() == b"sat" {
                     return;
                 }
-                if e.name().into_inner() == b"a:satMod" {
+                if e.name().local_name().into_inner() == b"satMod" {
                     return;
                 }
             },

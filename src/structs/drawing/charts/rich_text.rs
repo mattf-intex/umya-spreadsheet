@@ -73,13 +73,13 @@ impl RichText {
     ) {
         xml_read_loop!(
             reader,
-            Event::Start(ref e) => match e.name().0 {
-                b"a:p" => {
+            Event::Start(ref e) => match e.name().local_name().into_inner() {
+                b"p" => {
                     let mut paragraph = Paragraph::default();
                     paragraph.set_attributes(reader, e);
                     self.add_paragraph(paragraph);
                 }
-                b"a:bodyPr" => {
+                b"bodyPr" => {
                     let mut body_properties = BodyProperties::default();
                     body_properties.set_attributes(reader, e, false);
                     self.set_body_properties(body_properties);
@@ -87,14 +87,14 @@ impl RichText {
                 _ => (),
             },
             Event::Empty(ref e) => {
-                if e.name().0 == b"a:bodyPr" {
+                if e.name().local_name().into_inner() == b"bodyPr" {
                     let mut body_properties = BodyProperties::default();
                     body_properties.set_attributes(reader, e, true);
                     self.set_body_properties(body_properties);
                 }
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:rich" {
+                if e.name().local_name().into_inner() == b"rich" {
                     return;
                 }
             },

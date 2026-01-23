@@ -127,40 +127,40 @@ impl ChartSpace {
     ) {
         xml_read_loop!(
             reader,
-            Event::Start(ref e) => match e.name().into_inner() {
-                b"mc:AlternateContent" => {
+            Event::Start(ref e) => match e.name().local_name().into_inner() {
+                b"AlternateContent" => {
                     let mut obj = Style::default();
                     obj.set_attributes(reader, e, true);
                     self.set_style(obj);
                 }
-                b"c:chart" => {
+                b"chart" => {
                     self.chart.set_attributes(reader, e);
                 }
-                b"c:printSettings" => {
+                b"printSettings" => {
                     let mut obj = PrintSettings::default();
                     obj.set_attributes(reader, e);
                     self.set_print_settings(obj);
                 }
-                b"c:spPr" => {
+                b"spPr" => {
                     let mut obj = ShapeProperties::default();
                     obj.set_attributes(reader, e);
                     self.set_shape_properties(obj);
                 }
                 _ => (),
             },
-            Event::Empty(ref e) => match e.name().into_inner() {
-                b"c:date1904" => {
+            Event::Empty(ref e) => match e.name().local_name().into_inner() {
+                b"date1904" => {
                     let mut obj = Date1904::default();
                     obj.set_attributes(reader, e);
                     self.set_date1904(obj);
                 }
-                b"c:lang" => {
+                b"lang" => {
                     self.editing_language.set_attributes(reader, e);
                 }
-                b"c:roundedCorners" => {
+                b"roundedCorners" => {
                     self.rounded_corners.set_attributes(reader, e);
                 }
-                b"c:style" => {
+                b"style" => {
                     let mut obj = Style::default();
                     obj.set_attributes(reader, e, false);
                     self.set_style(obj);
@@ -168,7 +168,7 @@ impl ChartSpace {
                 _ => (),
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:chartSpace" {
+                if e.name().local_name().into_inner() == b"chartSpace" {
                     return;
                 }
             },

@@ -43,14 +43,14 @@ impl LineStyleList {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"a:ln" {
+                if e.name().local_name().into_inner() == b"ln" {
                     let mut obj = Outline::default();
                     obj.set_attributes(reader, e);
                     self.outline_collection.push(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:lnStyleLst" {
+                if e.name().local_name().into_inner() == b"lnStyleLst" {
                     return
                 }
             },

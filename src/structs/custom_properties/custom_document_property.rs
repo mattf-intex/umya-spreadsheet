@@ -111,11 +111,11 @@ impl CustomDocumentProperty {
                 value = e.unescape().unwrap().to_string();
             },
             Event::End(ref e) => {
-                match e.name().into_inner(){
-                    b"vt:lpwstr" =>{self.set_value_string(&value);}
-                    b"vt:filetime" =>{self.set_value_date_manual(&value);}
-                    b"vt:i4"=> {self.set_value_number(value.parse::<i32>().unwrap());}
-                    b"vt:bool"=> {self.set_value_bool(matches!(value.as_str(), "true" | "1"));}
+                match e.name().local_name().into_inner(){
+                    b"lpwstr" =>{self.set_value_string(&value);}
+                    b"filetime" =>{self.set_value_date_manual(&value);}
+                    b"i4"=> {self.set_value_number(value.parse::<i32>().unwrap());}
+                    b"bool"=> {self.set_value_bool(matches!(value.as_str(), "true" | "1"));}
                     b"property"=> {return}
                     _=>{}
                 }

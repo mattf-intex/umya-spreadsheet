@@ -65,18 +65,18 @@ impl ChartText {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"c:rich" => {
+                match e.name().local_name().into_inner() {
+                    b"rich" => {
                         let mut obj = RichText::default();
                         obj.set_attributes(reader, e);
                         self.set_rich_text(obj);
                     }
-                    b"c:strRef" => {
+                    b"strRef" => {
                         let mut obj = StringReference::default();
                         obj.set_attributes(reader, e);
                         self.set_string_reference(obj);
                     }
-                    b"c:v" => {
+                    b"v" => {
                         let mut obj = NumericValue::default();
                         obj.set_attributes(reader, e);
                         self.set_numeric_value(obj);
@@ -85,7 +85,7 @@ impl ChartText {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:tx" {
+                if e.name().local_name().into_inner() == b"tx" {
                     return;
                 }
             },

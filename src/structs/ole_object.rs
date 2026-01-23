@@ -141,12 +141,12 @@ impl OleObject {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"mc:Choice" => {
+                match e.name().local_name().into_inner() {
+                    b"Choice" => {
                         alternate_content = "Choice";
                         set_string_from_xml!(self, e, requires, "Requires");
                     }
-                    b"mc:Fallback" => {
+                    b"Fallback" => {
                         alternate_content = "Fallback";
                     }
                     b"oleObject" => {
@@ -170,7 +170,7 @@ impl OleObject {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"mc:AlternateContent" {
+                if e.name().local_name().into_inner() == b"AlternateContent" {
                     return
                 }
             },

@@ -75,20 +75,20 @@ impl EffectList {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:softEdge" {
+                if e.name().local_name().into_inner() == b"softEdge" {
                     let mut obj = SoftEdge::default();
                     obj.set_attributes(reader, e);
                     self.set_soft_edge(obj);
                 }
             },
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:glow" => {
+                match e.name().local_name().into_inner() {
+                    b"glow" => {
                         let mut obj = Glow::default();
                         obj.set_attributes(reader, e);
                         self.set_glow(obj);
                     }
-                    b"a:outerShdw" => {
+                    b"outerShdw" => {
                         let mut obj = OuterShadow::default();
                         obj.set_attributes(reader, e);
                         self.set_outer_shadow(obj);
@@ -97,7 +97,7 @@ impl EffectList {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:effectLst" {
+                if e.name().local_name().into_inner() == b"effectLst" {
                     return;
                 }
             },

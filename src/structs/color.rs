@@ -268,7 +268,7 @@ impl Color {
         let mut buf = Vec::new();
         loop {
             match reader.read_event_into(&mut buf) {
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
                     b"color" => return,
                     b"fgColor" => return,
                     b"bgColor" => return,

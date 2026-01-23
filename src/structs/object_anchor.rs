@@ -93,24 +93,24 @@ impl ObjectAnchor {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
+                match e.name().local_name().into_inner() {
                     b"from" => {
                         self.from_marker.set_attributes(reader, e);
                     }
-                    b"xdr:from" => {
+                    b"from" => {
                         self.from_marker.set_attributes(reader, e);
                     }
                     b"to" => {
                         self.to_marker.set_attributes(reader, e);
                     }
-                    b"xdr:to" => {
+                    b"to" => {
                         self.to_marker.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"anchor" {
+                if e.name().local_name().into_inner() == b"anchor" {
                     return
                 }
             },

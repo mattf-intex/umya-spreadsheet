@@ -201,34 +201,34 @@ impl TwoCellAnchor {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                b"xdr:from" => {
+                match e.name().local_name().into_inner() {
+                b"from" => {
                     self.from_marker.set_attributes(reader, e);
                 }
-                b"xdr:to" => {
+                b"to" => {
                     self.to_marker.set_attributes(reader, e);
                 }
-                b"xdr:grpSp" => {
+                b"grpSp" => {
                     let mut obj = GroupShape::default();
                     obj.set_attributes(reader, e, drawing_relationships);
                     self.set_group_shape(obj);
                 }
-                b"xdr:graphicFrame" => {
+                b"graphicFrame" => {
                     let mut obj = GraphicFrame::default();
                     obj.set_attributes(reader, e, drawing_relationships);
                     self.set_graphic_frame(obj);
                 }
-                b"xdr:sp" => {
+                b"sp" => {
                     let mut obj = Shape::default();
                     obj.set_attributes(reader, e, drawing_relationships);
                     self.set_shape(obj);
                 }
-                b"xdr:cxnSp" => {
+                b"cxnSp" => {
                     let mut obj = ConnectionShape::default();
                     obj.set_attributes(reader, e, drawing_relationships);
                     self.set_connection_shape(obj);
                 }
-                b"xdr:pic" => {
+                b"pic" => {
                     let mut obj = Picture::default();
                     obj.set_attributes(reader, e, drawing_relationships);
                     self.set_picture(obj);
@@ -237,7 +237,7 @@ impl TwoCellAnchor {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:twoCellAnchor" {
+                if e.name().local_name().into_inner() == b"twoCellAnchor" {
                     return
                 }
             },

@@ -66,26 +66,26 @@ impl Pie3DChart {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().0 {
-                    b"c:ser" => {
+                match e.name().local_name().into_inner() {
+                    b"ser" => {
                         let mut obj = AreaChartSeries::default();
                         obj.set_attributes(reader, e);
                         self.get_area_chart_series_list_mut()
                             .add_area_chart_series(obj);
                         }
-                    b"c:dLbls" => {
+                    b"dLbls" => {
                         self.data_labels.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().0 == b"c:varyColors" {
+                if e.name().local_name().into_inner() == b"varyColors" {
                     self.vary_colors.set_attributes(reader, e);
                 }
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:pie3DChart" {
+                if e.name().local_name().into_inner() == b"pie3DChart" {
                     return;
                 }
             },

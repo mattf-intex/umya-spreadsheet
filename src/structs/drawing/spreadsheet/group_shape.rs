@@ -92,19 +92,19 @@ impl GroupShape {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"xdr:nvGrpSpPr" => {
+                match e.name().local_name().into_inner() {
+                    b"nvGrpSpPr" => {
                         self.non_visual_group_shape_properties.set_attributes(reader, e);
                     }
-                    b"xdr:grpSpPr" => {
+                    b"grpSpPr" => {
                         self.group_shape_properties.set_attributes(reader, e);
                     }
-                    b"xdr:pic" => {
+                    b"pic" => {
                         let mut obj = Picture::default();
                         obj.set_attributes(reader, e, drawing_relationships);
                         self.add_picture_collection(obj);
                     }
-                    b"xdr:sp" => {
+                    b"sp" => {
                         let mut obj = Shape::default();
                         obj.set_attributes(reader, e, drawing_relationships);
                         self.add_shape_collection(obj);
@@ -113,7 +113,7 @@ impl GroupShape {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:grpSp" {
+                if e.name().local_name().into_inner() == b"grpSp" {
                     return;
                 }
             },

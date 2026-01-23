@@ -37,12 +37,12 @@ impl Colors {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"mruColors" {
+                if e.name().local_name().into_inner() == b"mruColors" {
                     self.mru_colors.set_attributes(reader, e);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"colors" {
+                if e.name().local_name().into_inner() == b"colors" {
                     return
                 }
             },

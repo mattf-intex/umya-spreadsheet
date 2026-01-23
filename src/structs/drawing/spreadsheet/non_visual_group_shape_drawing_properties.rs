@@ -43,14 +43,14 @@ impl NonVisualGroupShapeDrawingProperties {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:grpSpLocks" {
+                if e.name().local_name().into_inner() == b"grpSpLocks" {
                     let mut obj = GroupShapeLocks::default();
                     obj.set_attributes(reader, e);
                     self.set_group_shape_locks(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:cNvGrpSpPr" {
+                if e.name().local_name().into_inner() == b"cNvGrpSpPr" {
                     return;
                 }
             },

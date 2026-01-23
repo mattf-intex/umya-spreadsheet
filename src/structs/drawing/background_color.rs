@@ -37,17 +37,17 @@ impl BackgroundColor {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"a:schemeClr" {
+                if e.name().local_name().into_inner() == b"schemeClr" {
                     self.scheme_color.set_attributes(reader, e, false);
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:schemeClr" {
+                if e.name().local_name().into_inner() == b"schemeClr" {
                     self.scheme_color.set_attributes(reader, e, true);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:bgClr" {
+                if e.name().local_name().into_inner() == b"bgClr" {
                     return
                 }
             },

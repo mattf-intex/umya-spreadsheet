@@ -73,18 +73,18 @@ impl EffectStyle {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                b"a:effectLst" => {
+                match e.name().local_name().into_inner() {
+                b"effectLst" => {
                     let mut obj = EffectList::default();
                     obj.set_attributes(reader, e, false);
                     self.effect_list = Some(Box::new(obj));
                 }
-                b"a:scene3d" => {
+                b"scene3d" => {
                     let mut obj = Scene3DType::default();
                     obj.set_attributes(reader, e);
                     self.scene_3d_type = Some(Box::new(obj));
                 }
-                b"a:sp3d" => {
+                b"sp3d" => {
                     let mut obj = Shape3DType::default();
                     obj.set_attributes(reader, e);
                     self.shape_3d_type = Some(Box::new(obj));
@@ -93,14 +93,14 @@ impl EffectStyle {
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:effectLst" {
+                if e.name().local_name().into_inner() == b"effectLst" {
                     let mut obj = EffectList::default();
                     obj.set_attributes(reader, e, true);
                     self.set_effect_list(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:effectStyle" {
+                if e.name().local_name().into_inner() == b"effectStyle" {
                     return
                 }
             },

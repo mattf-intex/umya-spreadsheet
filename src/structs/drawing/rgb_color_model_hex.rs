@@ -182,43 +182,43 @@ impl RgbColorModelHex {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:lum" => {
+                match e.name().local_name().into_inner() {
+                    b"lum" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.luminance = Some(obj);
                     }
-                    b"a:lumMod" => {
+                    b"lumMod" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.luminance_modulation = Some(obj);
                     }
-                    b"a:lumOff" => {
+                    b"lumOff" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.luminance_offset = Some(obj);
                     }
-                    b"a:sat" => {
+                    b"sat" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.saturation = Some(obj);
                     }
-                    b"a:satMod" => {
+                    b"satMod" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.saturation_modulation = Some(obj);
                     }
-                    b"a:shade" => {
+                    b"shade" => {
                         let mut obj = PositiveFixedPercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.shade = Some(obj);
                     }
-                    b"a:alpha" => {
+                    b"alpha" => {
                         let mut obj = PositiveFixedPercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.alpha = Some(obj);
                     }
-                    b"a:tint" => {
+                    b"tint" => {
                         let mut obj = PositiveFixedPercentageType::default();
                         obj.set_attributes(reader, e, true);
                         self.tint = Some(obj);
@@ -227,43 +227,43 @@ impl RgbColorModelHex {
                 }
             },
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:lum" => {
+                match e.name().local_name().into_inner() {
+                    b"lum" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.luminance = Some(obj);
                     }
-                    b"a:lumMod" => {
+                    b"lumMod" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.luminance_modulation = Some(obj);
                     }
-                    b"a:lumOff" => {
+                    b"lumOff" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.luminance_offset = Some(obj);
                     }
-                    b"a:sat" => {
+                    b"sat" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.saturation = Some(obj);
                     }
-                    b"a:satMod" => {
+                    b"satMod" => {
                         let mut obj = PercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.saturation_modulation = Some(obj);
                     }
-                    b"a:shade" => {
+                    b"shade" => {
                         let mut obj = PositiveFixedPercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.shade = Some(obj);
                     }
-                    b"a:alpha" => {
+                    b"alpha" => {
                         let mut obj = PositiveFixedPercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.alpha = Some(obj);
                     }
-                    b"a:tint" => {
+                    b"tint" => {
                         let mut obj = PositiveFixedPercentageType::default();
                         obj.set_attributes(reader, e, false);
                         self.tint = Some(obj);
@@ -272,7 +272,7 @@ impl RgbColorModelHex {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:srgbClr" {
+                if e.name().local_name().into_inner() == b"srgbClr" {
                     return;
                 }
             },

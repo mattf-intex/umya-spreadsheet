@@ -49,12 +49,12 @@ impl Style {
             xml_read_loop!(
                 reader,
                 Event::Empty(ref e) => {
-                    if e.name().into_inner() == b"c:style" {
+                    if e.name().local_name().into_inner() == b"style" {
                         self.val.set_value_string(get_attribute(e, b"val").unwrap());
                     }
                 },
                 Event::End(ref e) => {
-                    if e.name().into_inner() == b"mc:AlternateContent" {
+                    if e.name().local_name().into_inner() == b"AlternateContent" {
                         return
                     }
                 },

@@ -27,7 +27,7 @@ pub(crate) fn read<R: io::Read + io::Seek>(
     xml_read_loop!(
         reader,
         Event::Start(ref e) => {
-            if e.name().into_inner() == b"sst" {
+            if e.name().local_name().into_inner() == b"sst" {
                 let mut obj = SharedStringTable::default();
                 obj.set_attributes(&mut reader, e);
                 spreadsheet.set_shared_string_table(obj);

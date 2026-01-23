@@ -540,12 +540,12 @@ impl Theme {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"a:themeElements" {
+                if e.name().local_name().into_inner() == b"themeElements" {
                     self.theme_elements.set_attributes(reader, e);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:theme" {
+                if e.name().local_name().into_inner() == b"theme" {
                     return
                 }
             },

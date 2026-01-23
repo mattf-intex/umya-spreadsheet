@@ -53,13 +53,13 @@ impl NonVisualConnectorShapeDrawingProperties {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:stCxn" => {
+                match e.name().local_name().into_inner() {
+                    b"stCxn" => {
                         let mut connection_type = StartConnection::default();
                         connection_type.set_attributes(reader, e);
                         self.set_start_connection(connection_type);
                     }
-                    b"a:endCxn" => {
+                    b"endCxn" => {
                         let mut connection_type = EndConnection::default();
                         connection_type.set_attributes(reader, e);
                         self.set_end_connection(connection_type);
@@ -68,7 +68,7 @@ impl NonVisualConnectorShapeDrawingProperties {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:cNvCxnSpPr" {
+                if e.name().local_name().into_inner() == b"cNvCxnSpPr" {
                     return;
                 }
             },

@@ -27,7 +27,7 @@ pub(crate) fn read<R: io::Read + io::Seek>(
     xml_read_loop!(
         reader,
         Event::Empty(ref e) => {
-            match e.name().into_inner() {
+            match e.name().local_name().into_inner() {
                 b"workbookView" => {
                     let mut obj = WorkbookView::default();
                     obj.set_attributes(&mut reader, e);
@@ -61,7 +61,7 @@ pub(crate) fn read<R: io::Read + io::Seek>(
             }
         },
         Event::Start(ref e) => {
-            match e.name().into_inner() {
+            match e.name().local_name().into_inner() {
                 b"sheet" => {
                     let name_value = get_attribute(e, b"name").unwrap();
                     let sheet_id_value = get_attribute(e, b"sheetId").unwrap();

@@ -70,18 +70,18 @@ impl SolidFill {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                b"a:schemeClr" => {
+                match e.name().local_name().into_inner() {
+                b"schemeClr" => {
                     let mut scheme_color = SchemeColor::default();
                     scheme_color.set_attributes(reader, e, false);
                     self.set_scheme_color(scheme_color);
                 }
-                b"a:srgbClr" => {
+                b"srgbClr" => {
                     let mut rgb_color_model_hex = RgbColorModelHex::default();
                     rgb_color_model_hex.set_attributes(reader, e, false);
                     self.set_rgb_color_model_hex(rgb_color_model_hex);
                 }
-                b"a:sysClr" => {
+                b"sysClr" => {
                     let mut obj = SystemColor::default();
                     obj.set_attributes(reader, e, false);
                     self.set_system_color(obj);
@@ -90,18 +90,18 @@ impl SolidFill {
                 }
             },
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                b"a:schemeClr" => {
+                match e.name().local_name().into_inner() {
+                b"schemeClr" => {
                     let mut scheme_color = SchemeColor::default();
                     scheme_color.set_attributes(reader, e, true);
                     self.set_scheme_color(scheme_color);
                 }
-                b"a:srgbClr" => {
+                b"srgbClr" => {
                     let mut rgb_color_model_hex = RgbColorModelHex::default();
                     rgb_color_model_hex.set_attributes(reader, e, true);
                     self.set_rgb_color_model_hex(rgb_color_model_hex);
                 }
-                b"a:sysClr" => {
+                b"sysClr" => {
                     let mut obj = SystemColor::default();
                     obj.set_attributes(reader, e, true);
                     self.set_system_color(obj);
@@ -110,7 +110,7 @@ impl SolidFill {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:solidFill" {
+                if e.name().local_name().into_inner() == b"solidFill" {
                     return;
                 }
             },

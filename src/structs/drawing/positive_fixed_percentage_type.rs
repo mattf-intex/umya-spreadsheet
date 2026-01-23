@@ -39,13 +39,13 @@ impl PositiveFixedPercentageType {
         xml_read_loop!(
             reader,
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:shade" {
+                if e.name().local_name().into_inner() == b"shade" {
                     return;
                 }
-                if e.name().into_inner() == b"a:alpha" {
+                if e.name().local_name().into_inner() == b"alpha" {
                     return;
                 }
-                if e.name().into_inner() == b"a:tint" {
+                if e.name().local_name().into_inner() == b"tint" {
                     return;
                 }
             },

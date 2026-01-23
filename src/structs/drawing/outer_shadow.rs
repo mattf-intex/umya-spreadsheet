@@ -179,13 +179,13 @@ impl OuterShadow {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:schemeClr" => {
+                match e.name().local_name().into_inner() {
+                    b"schemeClr" => {
                         let mut obj = SchemeColor::default();
                         obj.set_attributes(reader, e, true);
                         self.set_scheme_color(obj);
                     }
-                    b"a:srgbClr" => {
+                    b"srgbClr" => {
                         let mut obj = RgbColorModelHex::default();
                         obj.set_attributes(reader, e, true);
                         self.set_rgb_color_model_hex(obj);
@@ -194,18 +194,18 @@ impl OuterShadow {
                 }
             },
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:prstClr" => {
+                match e.name().local_name().into_inner() {
+                    b"prstClr" => {
                         let mut obj = PresetColor::default();
                         obj.set_attributes(reader, e);
                         self.set_preset_color(obj);
                     }
-                    b"a:schemeClr" => {
+                    b"schemeClr" => {
                         let mut obj = SchemeColor::default();
                         obj.set_attributes(reader, e, false);
                         self.set_scheme_color(obj);
                     }
-                    b"a:srgbClr" => {
+                    b"srgbClr" => {
                         let mut obj = RgbColorModelHex::default();
                         obj.set_attributes(reader, e, false);
                         self.set_rgb_color_model_hex(obj);
@@ -214,7 +214,7 @@ impl OuterShadow {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:outerShdw" {
+                if e.name().local_name().into_inner() == b"outerShdw" {
                     return
                 }
             },

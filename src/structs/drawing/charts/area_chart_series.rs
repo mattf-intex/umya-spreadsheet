@@ -268,77 +268,77 @@ impl AreaChartSeries {
     ) {
         xml_read_loop!(
             reader,
-            Event::Start(ref e) => match e.name().into_inner() {
-                b"c:tx" => {
+            Event::Start(ref e) => match e.name().local_name().into_inner() {
+                b"tx" => {
                     let mut obj = ChartText::default();
                     obj.set_attributes(reader, e);
                     self.set_chart_text(obj);
                 }
-                b"c:marker" => {
+                b"marker" => {
                     let mut obj = Marker::default();
                     obj.set_attributes(reader, e, false);
                     self.set_marker(obj);
                 }
-                b"c:spPr" => {
+                b"spPr" => {
                     let mut obj = ShapeProperties::default();
                     obj.set_attributes(reader, e);
                     self.set_shape_properties(obj);
                 }
-                b"c:cat" => {
+                b"cat" => {
                     let mut obj = CategoryAxisData::default();
                     obj.set_attributes(reader, e);
                     self.set_category_axis_data(obj);
                 }
-                b"c:val" => {
+                b"val" => {
                     let mut obj = Values::default();
                     obj.set_attributes(reader, e);
                     self.set_values(obj);
                 }
-                b"c:xVal" => {
+                b"xVal" => {
                     let mut obj = XValues::default();
                     obj.set_attributes(reader, e);
                     self.set_x_values(obj);
                 }
-                b"c:yVal" => {
+                b"yVal" => {
                     let mut obj = YValues::default();
                     obj.set_attributes(reader, e);
                     self.set_y_values(obj);
                 }
-                b"c:bubbleSize" => {
+                b"bubbleSize" => {
                     let mut obj = BubbleSize::default();
                     obj.set_attributes(reader, e);
                     self.set_bubble_size(obj);
                 }
-                b"c:dLbls" => {
+                b"dLbls" => {
                     let mut obj = DataLabels::default();
                     obj.set_attributes(reader, e);
                     self.set_data_labels(obj);
                 }
                 _ => (),
             },
-            Event::Empty(ref e) => match e.name().into_inner() {
-                b"c:idx" => {
+            Event::Empty(ref e) => match e.name().local_name().into_inner() {
+                b"idx" => {
                     self.index.set_attributes(reader, e);
                 }
-                b"c:order" => {
+                b"order" => {
                     self.order.set_attributes(reader, e);
                 }
-                b"c:explosion" => {
+                b"explosion" => {
                     let mut obj = Explosion::default();
                     obj.set_attributes(reader, e);
                     self.set_explosion(obj);
                 }
-                b"c:invertIfNegative" => {
+                b"invertIfNegative" => {
                     let mut obj = InvertIfNegative::default();
                     obj.set_attributes(reader, e);
                     self.set_invert_if_negative(obj);
                 }
-                b"c:bubble3D" => {
+                b"bubble3D" => {
                     let mut obj = Bubble3D::default();
                     obj.set_attributes(reader, e);
                     self.set_bubble_3d(obj);
                 }
-                b"c:smooth" => {
+                b"smooth" => {
                     let mut obj = Smooth::default();
                     obj.set_attributes(reader, e);
                     self.set_smooth(obj);
@@ -346,7 +346,7 @@ impl AreaChartSeries {
                 _ => (),
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:ser" {
+                if e.name().local_name().into_inner() == b"ser" {
                     return;
                 }
             },

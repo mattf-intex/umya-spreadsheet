@@ -64,21 +64,21 @@ impl Properties {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"property" {
+                if e.name().local_name().into_inner() == b"property" {
                     let mut obj = CustomDocumentProperty::default();
                     obj.set_attributes(reader, e, true);
                     self.add_custom_document_property_list(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"property" {
+                if e.name().local_name().into_inner() == b"property" {
                     let mut obj = CustomDocumentProperty::default();
                     obj.set_attributes(reader, e, false);
                     self.add_custom_document_property_list(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"Properties" {
+                if e.name().local_name().into_inner() == b"Properties" {
                     return
                 }
             },

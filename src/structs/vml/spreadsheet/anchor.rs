@@ -169,7 +169,7 @@ impl Anchor {
                 self.set_bottom_offset(Self::get_number(split_str.get(7)));
             },
             Event::End(ref e) => {
-                if e.name().0 == b"x:Anchor" {
+                if e.name().local_name().into_inner() == b"Anchor" {
                     return
                 }
             },

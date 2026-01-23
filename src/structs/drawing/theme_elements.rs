@@ -70,21 +70,21 @@ impl ThemeElements {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:clrScheme" => {
+                match e.name().local_name().into_inner() {
+                    b"clrScheme" => {
                         self.color_scheme.set_attributes(reader, e);
                     }
-                    b"a:fontScheme" => {
+                    b"fontScheme" => {
                         self.font_scheme.set_attributes(reader, e);
                     }
-                    b"a:fmtScheme" => {
+                    b"fmtScheme" => {
                         self.format_scheme.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:themeElements" {
+                if e.name().local_name().into_inner() == b"themeElements" {
                     return
                 }
             },

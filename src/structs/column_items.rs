@@ -38,21 +38,21 @@ impl ColumnItems {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"i" {
+                if e.name().local_name().into_inner() == b"i" {
                     let mut obj = RowItem::default();
                     obj.set_attributes(reader, e, true);
                     self.add_list_mut(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"i" {
+                if e.name().local_name().into_inner() == b"i" {
                     let mut obj = RowItem::default();
                     obj.set_attributes(reader, e, false);
                     self.add_list_mut(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"colItems" {
+                if e.name().local_name().into_inner() == b"colItems" {
                     return
                 }
             },

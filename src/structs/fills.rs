@@ -57,14 +57,14 @@ impl Fills {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"fill" {
+                if e.name().local_name().into_inner() == b"fill" {
                     let mut obj = Fill::default();
                     obj.set_attributes(reader, e);
                     self.set_fill(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"fills" {
+                if e.name().local_name().into_inner() == b"fills" {
                     return
                 }
             },

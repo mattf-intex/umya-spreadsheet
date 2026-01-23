@@ -69,26 +69,26 @@ impl Marker {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().0 == b"c:symbol" {
+                if e.name().local_name().into_inner() == b"symbol" {
                     let mut obj = Symbol::default();
                     obj.set_attributes(reader, e);
                     self.set_symbol(obj);
                 }
-                if e.name().0 == b"c:size" {
+                if e.name().local_name().into_inner() == b"size" {
                     let mut obj = Size::default();
                     obj.set_attributes(reader, e);
                     self.set_size(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().0 == b"c:spPr" {
+                if e.name().local_name().into_inner() == b"spPr" {
                     let mut obj = ShapeProperties::default();
                     obj.set_attributes(reader, e);
                     self.set_shape_properties(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:marker" {
+                if e.name().local_name().into_inner() == b"marker" {
                     return;
                 }
             },

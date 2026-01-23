@@ -35,12 +35,12 @@ impl XValues {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().0 == b"c:numRef" {
+                if e.name().local_name().into_inner() == b"numRef" {
                     self.number_reference.set_attributes(reader, e);
                 }
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:xVal" {
+                if e.name().local_name().into_inner() == b"xVal" {
                     return;
                 }
             },

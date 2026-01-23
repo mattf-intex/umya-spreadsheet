@@ -33,7 +33,7 @@ impl SeriesText {
                 self.set_value(e.unescape().unwrap());
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:tx" {
+                if e.name().local_name().into_inner() == b"tx" {
                     return
                 }
             },

@@ -19,7 +19,7 @@ pub(crate) fn read<R: io::Read + io::Seek>(
     xml_read_loop!(
         reader,
         Event::Empty(ref e) => {
-            if e.name().into_inner() == b"Relationship" {
+            if e.name().local_name().into_inner() == b"Relationship" {
                 let id_value = get_attribute(e, b"Id").unwrap();
                 let type_value = get_attribute(e, b"Type").unwrap();
                 let target_value = get_attribute(e, b"Target").unwrap();

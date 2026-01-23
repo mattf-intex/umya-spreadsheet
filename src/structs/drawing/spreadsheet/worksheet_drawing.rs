@@ -253,11 +253,11 @@ impl WorksheetDrawing {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"mc:AlternateContent" => {
+                match e.name().local_name().into_inner() {
+                    b"AlternateContent" => {
                         is_alternate_content = true;
                     }
-                    b"xdr:oneCellAnchor" => {
+                    b"oneCellAnchor" => {
                         if is_alternate_content {
                             continue;
                         }
@@ -271,7 +271,7 @@ impl WorksheetDrawing {
                             self.add_one_cell_anchor_collection(obj);
                         }
                     }
-                    b"xdr:twoCellAnchor" => {
+                    b"twoCellAnchor" => {
                         let os = ole_objects.get_ole_object_mut();
                         if is_alternate_content && !os.is_empty() {
                             os[ole_index]
@@ -306,11 +306,11 @@ impl WorksheetDrawing {
             },
 
             Event::End(ref e) => {
-                match e.name().into_inner() {
-                    b"mc:AlternateContent" => {
+                match e.name().local_name().into_inner() {
+                    b"AlternateContent" => {
                         is_alternate_content = false;
                     }
-                    b"xdr:wsDr" => return,
+                    b"wsDr" => return,
                     _ => (),
                 }
             },

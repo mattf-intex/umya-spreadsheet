@@ -185,7 +185,7 @@ impl DefinedName {
                     value = e.unescape().unwrap().to_string();
                 },
                 Event::End(ref e) => {
-                    if e.name().into_inner() == b"definedName" {
+                    if e.name().local_name().into_inner() == b"definedName" {
                         self.set_address(value);
                         return
                     }

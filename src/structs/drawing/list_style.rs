@@ -300,57 +300,57 @@ impl ListStyle {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:effectLst" => {
+                match e.name().local_name().into_inner() {
+                    b"effectLst" => {
                         let obj = EffectList::default();
                         self.set_effect_list(obj);
                     }
-                    b"a:defPPr" => {
+                    b"defPPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_default_paragraph_properties(obj);
                     }
-                    b"a:lvl1pPr" => {
+                    b"lvl1pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level1_paragraph_properties(obj);
                     }
-                    b"a:lvl2pPr" => {
+                    b"lvl2pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level2_paragraph_properties(obj);
                     }
-                    b"a:lvl3pPr" => {
+                    b"lvl3pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level3_paragraph_properties(obj);
                     }
-                    b"a:lvl4pPr" => {
+                    b"lvl4pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level4_paragraph_properties(obj);
                     }
-                    b"a:lvl5pPr" => {
+                    b"lvl5pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level5_paragraph_properties(obj);
                     }
-                    b"a:lvl6pPr" => {
+                    b"lvl6pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level6_paragraph_properties(obj);
                     }
-                    b"a:lvl7pPr" => {
+                    b"lvl7pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level7_paragraph_properties(obj);
                     }
-                    b"a:lvl8pPr" => {
+                    b"lvl8pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level8_paragraph_properties(obj);
                     }
-                    b"a:lvl9pPr" => {
+                    b"lvl9pPr" => {
                         let mut obj = TextParagraphPropertiesType::default();
                         obj.set_attributes(reader, e);
                         self.set_level9_paragraph_properties(obj);
@@ -359,7 +359,7 @@ impl ListStyle {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:lstStyle" {
+                if e.name().local_name().into_inner() == b"lstStyle" {
                     return;
                 }
             },

@@ -73,8 +73,8 @@ impl ReferenceSequence {
                 Ok(Event::Text(e)) => {
                     value = e.unescape().unwrap().to_string();
                 }
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
-                    b"xm:sqref" => {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
+                    b"sqref" => {
                         self.set_sqref(value);
                         value = String::new();
                         return;

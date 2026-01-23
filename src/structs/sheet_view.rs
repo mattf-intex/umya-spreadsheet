@@ -194,7 +194,7 @@ impl SheetView {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
+                match e.name().local_name().into_inner() {
                     b"pane" => {
                         let mut obj = Pane::default();
                         obj.set_attributes(reader, e);
@@ -209,7 +209,7 @@ impl SheetView {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"sheetView" {
+                if e.name().local_name().into_inner() == b"sheetView" {
                     return
                 }
             },

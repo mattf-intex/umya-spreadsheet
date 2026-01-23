@@ -49,31 +49,31 @@ impl StyleMatrixReferenceType {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"a:schemeClr" {
+                if e.name().local_name().into_inner() == b"schemeClr" {
                     let mut scheme_color = SchemeColor::default();
                     scheme_color.set_attributes(reader, e, false);
                     self.set_scheme_color(scheme_color);
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:schemeClr" {
+                if e.name().local_name().into_inner() == b"schemeClr" {
                     let mut scheme_color = SchemeColor::default();
                     scheme_color.set_attributes(reader, e, true);
                     self.set_scheme_color(scheme_color);
                 }
             },
             Event::End(ref e) => {
-                match e.name().into_inner() {
-                    b"a:lnRef" => {
+                match e.name().local_name().into_inner() {
+                    b"lnRef" => {
                         return;
                     }
-                    b"a:fillRef" => {
+                    b"fillRef" => {
                         return;
                     }
-                    b"a:effectRef" => {
+                    b"effectRef" => {
                         return;
                     }
-                    b"a:fontRef" => {
+                    b"fontRef" => {
                         return;
                     }
                     _ => (),

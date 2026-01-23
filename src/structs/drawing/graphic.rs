@@ -40,13 +40,13 @@ impl Graphic {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"a:graphicData" {
+                if e.name().local_name().into_inner() == b"graphicData" {
                     self.graphic_data
                         .set_attributes(reader, e, drawing_relationships);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:graphic" {
+                if e.name().local_name().into_inner() == b"graphic" {
                     return
                 }
             },

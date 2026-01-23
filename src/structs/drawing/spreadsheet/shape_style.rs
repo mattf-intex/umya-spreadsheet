@@ -64,23 +64,23 @@ impl ShapeStyle {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:lnRef" => {
+                match e.name().local_name().into_inner() {
+                    b"lnRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, false);
                         self.set_line_reference(style_matrix_reference_type);
                     }
-                    b"a:fillRef" => {
+                    b"fillRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, false);
                         self.set_fill_reference(style_matrix_reference_type);
                     }
-                    b"a:effectRef" => {
+                    b"effectRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, false);
                         self.set_effect_reference(style_matrix_reference_type);
                     }
-                    b"a:fontRef" => {
+                    b"fontRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, false);
                         self.set_font_reference(style_matrix_reference_type);
@@ -89,23 +89,23 @@ impl ShapeStyle {
                 }
             },
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:lnRef" => {
+                match e.name().local_name().into_inner() {
+                    b"lnRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, true);
                         self.set_line_reference(style_matrix_reference_type);
                     }
-                    b"a:fillRef" => {
+                    b"fillRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, true);
                         self.set_fill_reference(style_matrix_reference_type);
                     }
-                    b"a:effectRef" => {
+                    b"effectRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, true);
                         self.set_effect_reference(style_matrix_reference_type);
                     }
-                    b"a:fontRef" => {
+                    b"fontRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
                         style_matrix_reference_type.set_attributes(reader, e, true);
                         self.set_font_reference(style_matrix_reference_type);
@@ -114,7 +114,7 @@ impl ShapeStyle {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:style" {
+                if e.name().local_name().into_inner() == b"style" {
                     return;
                 }
             },

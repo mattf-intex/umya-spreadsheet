@@ -40,7 +40,7 @@ impl ResizeWithCells {
                 self.value.set_value_string(e.unescape().unwrap());
             },
             Event::End(ref e) => {
-                if e.name().0 == b"x:SizeWithCells" {
+                if e.name().local_name().into_inner() == b"SizeWithCells" {
                     return
                 }
             },

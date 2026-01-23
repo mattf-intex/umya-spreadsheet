@@ -245,48 +245,48 @@ impl ColorScheme {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:accent1" => {
+                match e.name().local_name().into_inner() {
+                    b"accent1" => {
                         self.accent1.set_attributes(reader, e);
                     }
-                    b"a:accent2" => {
+                    b"accent2" => {
                         self.accent2.set_attributes(reader, e);
                     }
-                    b"a:accent3" => {
+                    b"accent3" => {
                         self.accent3.set_attributes(reader, e);
                     }
-                    b"a:accent4" => {
+                    b"accent4" => {
                         self.accent4.set_attributes(reader, e);
                     }
-                    b"a:accent5" => {
+                    b"accent5" => {
                         self.accent5.set_attributes(reader, e);
                     }
-                    b"a:accent6" => {
+                    b"accent6" => {
                         self.accent6.set_attributes(reader, e);
                     }
-                    b"a:dk1" => {
+                    b"dk1" => {
                         self.dk1.set_attributes(reader, e);
                     }
-                    b"a:dk2" => {
+                    b"dk2" => {
                         self.dk2.set_attributes(reader, e);
                     }
-                    b"a:folHlink" => {
+                    b"folHlink" => {
                         self.fol_hlink.set_attributes(reader, e);
                     }
-                    b"a:hlink" => {
+                    b"hlink" => {
                         self.hlink.set_attributes(reader, e);
                     }
-                    b"a:lt1" => {
+                    b"lt1" => {
                         self.lt1.set_attributes(reader, e);
                     }
-                    b"a:lt2" => {
+                    b"lt2" => {
                         self.lt2.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:clrScheme" {
+                if e.name().local_name().into_inner() == b"clrScheme" {
                     return
                 }
             },

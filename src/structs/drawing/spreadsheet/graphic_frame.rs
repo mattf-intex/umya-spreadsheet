@@ -96,15 +96,15 @@ impl GraphicFrame {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"xdr:nvGraphicFramePr" => {
+                match e.name().local_name().into_inner() {
+                    b"nvGraphicFramePr" => {
                         self.non_visual_graphic_frame_properties
                             .set_attributes(reader, e);
                         }
-                    b"xdr:xfrm" => {
+                    b"xfrm" => {
                         self.transform.set_attributes(reader, e);
                     }
-                    b"a:graphic" => {
+                    b"graphic" => {
                         self.graphic
                             .set_attributes(reader, e, drawing_relationships);
                         }
@@ -112,7 +112,7 @@ impl GraphicFrame {
                 }
             },
             Event::End(ref e) => {
-                if  e.name().into_inner() == b"xdr:graphicFrame" {
+                if  e.name().local_name().into_inner() == b"graphicFrame" {
                     return
                 }
             },

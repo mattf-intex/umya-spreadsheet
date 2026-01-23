@@ -37,14 +37,14 @@ impl CacheFields {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"cacheField" {
+                if e.name().local_name().into_inner() == b"cacheField" {
                     let mut obj = CacheField::default();
                     obj.set_attributes(reader, e);
                     self.add_list_mut(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"cacheFields" {
+                if e.name().local_name().into_inner() == b"cacheFields" {
                     return
                 }
             },

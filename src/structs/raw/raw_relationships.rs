@@ -86,7 +86,7 @@ impl RawRelationships {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"Relationship" {
+                if e.name().local_name().into_inner() == b"Relationship" {
                     let mut obj = RawRelationship::default();
                     obj.set_attributes(&mut reader, e, arv, base_path);
                     self.add_relationship_list(obj);

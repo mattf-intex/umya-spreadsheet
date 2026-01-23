@@ -85,13 +85,13 @@ impl TextFontType {
         xml_read_loop!(
             reader,
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:latin" {
+                if e.name().local_name().into_inner() == b"latin" {
                     return;
                 }
-                if e.name().into_inner() == b"a:cs" {
+                if e.name().local_name().into_inner() == b"cs" {
                     return;
                 }
-                if e.name().into_inner() == b"a:ea" {
+                if e.name().local_name().into_inner() == b"ea" {
                     return;
                 }
             },

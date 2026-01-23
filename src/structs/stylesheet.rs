@@ -379,7 +379,7 @@ impl Stylesheet {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
+                match e.name().local_name().into_inner() {
                     b"numFmts" => {
                         self.numbering_formats.set_attributes(reader, e);
                     }
@@ -411,7 +411,7 @@ impl Stylesheet {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"styleSheet" {
+                if e.name().local_name().into_inner() == b"styleSheet" {
                     return
                 }
             },

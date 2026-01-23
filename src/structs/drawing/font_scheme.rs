@@ -71,18 +71,18 @@ impl FontScheme {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                b"a:majorFont" => {
+                match e.name().local_name().into_inner() {
+                b"majorFont" => {
                     self.major_font.set_attributes(reader, e);
                 }
-                b"a:minorFont" => {
+                b"minorFont" => {
                     self.minor_font.set_attributes(reader, e);
                 }
                 _ => (),
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:fontScheme" {
+                if e.name().local_name().into_inner() == b"fontScheme" {
                     return
                 }
             },

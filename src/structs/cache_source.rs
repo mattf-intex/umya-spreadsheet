@@ -55,14 +55,14 @@ impl CacheSource {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"worksheetSource" {
+                if e.name().local_name().into_inner() == b"worksheetSource" {
                     let mut obj = WorksheetSource::default();
                     obj.set_attributes(reader, e);
                     self.set_worksheet_source_mut(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"cacheSource" {
+                if e.name().local_name().into_inner() == b"cacheSource" {
                     return
                 }
             },

@@ -42,14 +42,14 @@ impl SpaceBefore {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:spcPct" {
+                if e.name().local_name().into_inner() == b"spcPct" {
                     let mut obj = SpacingPercent::default();
                     obj.set_attributes(reader, e);
                     self.set_spacing_percent(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:spcBef" {
+                if e.name().local_name().into_inner() == b"spcBef" {
                     return;
                 }
             },

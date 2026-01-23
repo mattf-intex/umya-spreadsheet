@@ -104,23 +104,23 @@ impl FormatScheme {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:fillStyleLst" => {
+                match e.name().local_name().into_inner() {
+                    b"fillStyleLst" => {
                         let mut obj = FillStyleList::default();
                         obj.set_attributes(reader, e);
                         self.fill_style_list = obj;
                     }
-                    b"a:lnStyleLst" => {
+                    b"lnStyleLst" => {
                         let mut obj = LineStyleList::default();
                         obj.set_attributes(reader, e);
                         self.line_style_list = obj;
                     }
-                    b"a:effectStyleLst" => {
+                    b"effectStyleLst" => {
                         let mut obj = EffectStyleList::default();
                         obj.set_attributes(reader, e);
                         self.effect_style_list = obj;
                     }
-                    b"a:bgFillStyleLst" => {
+                    b"bgFillStyleLst" => {
                         let mut obj = BackgroundFillStyleList::default();
                         obj.set_attributes(reader, e);
                         self.background_fill_style_list = obj;
@@ -129,7 +129,7 @@ impl FormatScheme {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:fmtScheme" {
+                if e.name().local_name().into_inner() == b"fmtScheme" {
                     return
                 }
             },

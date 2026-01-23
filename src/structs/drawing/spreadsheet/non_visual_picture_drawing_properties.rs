@@ -55,14 +55,14 @@ impl NonVisualPictureDrawingProperties {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:picLocks" {
+                if e.name().local_name().into_inner() == b"picLocks" {
                     let mut obj = PictureLocks::default();
                     obj.set_attributes(reader, e);
                     self.set_picture_locks(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:cNvPicPr" {
+                if e.name().local_name().into_inner() == b"cNvPicPr" {
                     return
                 }
             },

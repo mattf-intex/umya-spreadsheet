@@ -65,19 +65,19 @@ impl NonVisualConnectionShapeProperties {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"xdr:cNvCxnSpPr" {
+                if e.name().local_name().into_inner() == b"cNvCxnSpPr" {
                     self.non_visual_connector_shape_drawing_properties
                         .set_attributes(reader, e);
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"xdr:cNvPr" {
+                if e.name().local_name().into_inner() == b"cNvPr" {
                     self.non_visual_drawing_properties
                         .set_attributes(reader, e, true);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:nvCxnSpPr" {
+                if e.name().local_name().into_inner() == b"nvCxnSpPr" {
                     return
                 }
             },

@@ -38,14 +38,14 @@ impl ColumnFields {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"field" {
+                if e.name().local_name().into_inner() == b"field" {
                     let mut obj = Field::default();
                     obj.set_attributes(reader, e);
                     self.add_list_mut(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"colFields" {
+                if e.name().local_name().into_inner() == b"colFields" {
                     return
                 }
             },

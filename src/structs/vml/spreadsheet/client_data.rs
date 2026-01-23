@@ -199,28 +199,28 @@ impl ClientData {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"x:MoveWithCells" => {
+                match e.name().local_name().into_inner() {
+                    b"MoveWithCells" => {
                         let mut obj = MoveWithCells::default();
                         obj.set_attributes(reader, e, true);
                         self.set_move_with_cells(obj);
                     }
-                    b"x:SizeWithCells" => {
+                    b"SizeWithCells" => {
                         let mut obj = ResizeWithCells::default();
                         obj.set_attributes(reader, e, true);
                         self.set_resize_with_cells(obj);
                     }
-                    b"x:AutoFill" => {
+                    b"AutoFill" => {
                         let mut obj = AutoFill::default();
                         obj.set_attributes(reader, e, true);
                         self.set_auto_fill(obj);
                     }
-                    b"x:Visible" => {
+                    b"Visible" => {
                         let mut obj = Visible::default();
                         obj.set_attributes(reader, e, true);
                         self.set_visible(obj);
                     }
-                    b"x:AutoPict" => {
+                    b"AutoPict" => {
                         let mut obj = AutoSizePicture::default();
                         obj.set_attributes(reader, e, true);
                         self.set_auto_size_picture(obj);
@@ -229,48 +229,48 @@ impl ClientData {
                 }
             },
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"x:Anchor" => {
+                match e.name().local_name().into_inner() {
+                    b"Anchor" => {
                         let mut obj = Anchor::default();
                         obj.set_attributes(reader, e);
                         self.set_anchor(obj);
                     }
-                    b"x:MoveWithCells" => {
+                    b"MoveWithCells" => {
                         let mut obj = MoveWithCells::default();
                         obj.set_attributes(reader, e, false);
                         self.set_move_with_cells(obj);
                     }
-                    b"x:SizeWithCells" => {
+                    b"SizeWithCells" => {
                         let mut obj = ResizeWithCells::default();
                         obj.set_attributes(reader, e, false);
                         self.set_resize_with_cells(obj);
                     }
-                    b"x:AutoFill" => {
+                    b"AutoFill" => {
                         let mut obj = AutoFill::default();
                         obj.set_attributes(reader, e, false);
                         self.set_auto_fill(obj);
                     }
-                    b"x:Row" => {
+                    b"Row" => {
                         let mut obj = CommentRowTarget::default();
                         obj.set_attributes(reader, e);
                         self.set_comment_row_target(obj);
                     }
-                    b"x:Column" => {
+                    b"Column" => {
                         let mut obj = CommentColumnTarget::default();
                         obj.set_attributes(reader, e);
                         self.set_comment_column_target(obj);
                     }
-                    b"x:CF" => {
+                    b"CF" => {
                         let mut obj = ClipboardFormat::default();
                         obj.set_attributes(reader, e);
                         self.set_clipboard_format(obj);
                     }
-                    b"x:Visible" => {
+                    b"Visible" => {
                         let mut obj = Visible::default();
                         obj.set_attributes(reader, e, false);
                         self.set_visible(obj);
                     }
-                    b"x:AutoPict" => {
+                    b"AutoPict" => {
                         let mut obj = AutoSizePicture::default();
                         obj.set_attributes(reader, e, false);
                         self.set_auto_size_picture(obj);
@@ -279,7 +279,7 @@ impl ClientData {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"x:ClientData" {
+                if e.name().local_name().into_inner() == b"ClientData" {
                     return
                 }
             },

@@ -19,7 +19,7 @@ pub(crate) fn read(
     let mut pivot_table = PivotTable::default();
     loop {
         match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(ref e)) => match e.name().into_inner() {
+            Ok(Event::Start(ref e)) => match e.name().local_name().into_inner() {
                 b"pivotTableDefinition" => {
                     let mut obj = PivotTableDefinition::default();
                     obj.set_attributes(&mut reader, e);
@@ -27,7 +27,7 @@ pub(crate) fn read(
                 }
                 _ => (),
             },
-            Ok(Event::End(ref e)) => match e.name().into_inner() {
+            Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
                 b"pivotTableDefinition" => {
                     break;
                 }

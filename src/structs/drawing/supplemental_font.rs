@@ -53,7 +53,7 @@ impl SupplementalFont {
         xml_read_loop!(
             reader,
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:font" {
+                if e.name().local_name().into_inner() == b"font" {
                     return;
                 }
             },

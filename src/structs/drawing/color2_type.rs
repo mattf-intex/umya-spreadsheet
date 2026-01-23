@@ -63,13 +63,13 @@ impl Color2Type {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                b"a:srgbClr" => {
+                match e.name().local_name().into_inner() {
+                b"srgbClr" => {
                     let mut obj = RgbColorModelHex::default();
                     obj.set_attributes(reader, e, true);
                     self.rgb_color_model_hex = Some(Box::new(obj));
                 }
-                b"a:sysClr" => {
+                b"sysClr" => {
                     let mut obj = SystemColor::default();
                     obj.set_attributes(reader, e, true);
                     self.system_color = Some(Box::new(obj));
@@ -78,13 +78,13 @@ impl Color2Type {
                 }
             },
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                b"a:srgbClr" => {
+                match e.name().local_name().into_inner() {
+                b"srgbClr" => {
                     let mut obj = RgbColorModelHex::default();
                     obj.set_attributes(reader, e, false);
                     self.rgb_color_model_hex = Some(Box::new(obj));
                 }
-                b"a:sysClr" => {
+                b"sysClr" => {
                     let mut obj = SystemColor::default();
                     obj.set_attributes(reader, e, false);
                     self.system_color = Some(Box::new(obj));
@@ -93,19 +93,19 @@ impl Color2Type {
                 }
             },
             Event::End(ref e) => {
-                match e.name().into_inner() {
-                b"a:accent1" => return,
-                b"a:accent2" => return,
-                b"a:accent3" => return,
-                b"a:accent4" => return,
-                b"a:accent5" => return,
-                b"a:accent6" => return,
-                b"a:dk1" => return,
-                b"a:dk2" => return,
-                b"a:folHlink" => return,
-                b"a:hlink" => return,
-                b"a:lt1" => return,
-                b"a:lt2" => return,
+                match e.name().local_name().into_inner() {
+                b"accent1" => return,
+                b"accent2" => return,
+                b"accent3" => return,
+                b"accent4" => return,
+                b"accent5" => return,
+                b"accent6" => return,
+                b"dk1" => return,
+                b"dk2" => return,
+                b"folHlink" => return,
+                b"hlink" => return,
+                b"lt1" => return,
+                b"lt2" => return,
                 _ => (),
                 }
             },

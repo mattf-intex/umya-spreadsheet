@@ -22,7 +22,7 @@ impl StringCache {
         xml_read_loop!(
             reader,
             Event::End(ref e) => {
-                if e.name().0 == b"c:strCache" {
+                if e.name().local_name().into_inner() == b"strCache" {
                     return;
                 }
             },

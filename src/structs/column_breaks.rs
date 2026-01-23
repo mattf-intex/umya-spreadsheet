@@ -43,14 +43,14 @@ impl ColumnBreaks {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"brk" {
+                if e.name().local_name().into_inner() == b"brk" {
                     let mut obj = Break::default();
                     obj.set_attributes(reader, e);
                     self.add_break_list(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"colBreaks" {
+                if e.name().local_name().into_inner() == b"colBreaks" {
                     return
                 }
             },

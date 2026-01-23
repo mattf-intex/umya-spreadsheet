@@ -147,37 +147,37 @@ impl Bar3DChart {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"c:ser" => {
+                match e.name().local_name().into_inner() {
+                    b"ser" => {
                         let mut obj = AreaChartSeries::default();
                         obj.set_attributes(reader, e);
                         self.get_area_chart_series_list_mut()
                             .add_area_chart_series(obj);
                         }
-                    b"c:dLbls" => {
+                    b"dLbls" => {
                         self.data_labels.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"c:barDir" => {
+                match e.name().local_name().into_inner() {
+                    b"barDir" => {
                         self.bar_direction.set_attributes(reader, e);
                     }
-                    b"c:grouping" => {
+                    b"grouping" => {
                         self.grouping.set_attributes(reader, e);
                     }
-                    b"c:varyColors" => {
+                    b"varyColors" => {
                         self.vary_colors.set_attributes(reader, e);
                     }
-                    b"c:gapWidth" => {
+                    b"gapWidth" => {
                         self.gap_width.set_attributes(reader, e);
                     }
-                    b"c:shape" => {
+                    b"shape" => {
                         self.shape.set_attributes(reader, e);
                     }
-                    b"c:axId" => {
+                    b"axId" => {
                         let mut obj = AxisId::default();
                         obj.set_attributes(reader, e);
                         self.add_axis_id(obj);
@@ -186,7 +186,7 @@ impl Bar3DChart {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:bar3DChart" {
+                if e.name().local_name().into_inner() == b"bar3DChart" {
                     return;
                 }
             },

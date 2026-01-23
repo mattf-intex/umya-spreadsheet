@@ -41,8 +41,8 @@ impl Formula {
                 Ok(Event::Text(e)) => {
                     value = e.unescape().unwrap().to_string();
                 }
-                Ok(Event::End(ref e)) => match e.name().into_inner() {
-                    b"xm:f" => {
+                Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
+                    b"f" => {
                         let mut obj = Address::default();
                         obj.set_address(value);
                         self.value = obj;

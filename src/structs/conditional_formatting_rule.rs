@@ -292,7 +292,7 @@ impl ConditionalFormattingRule {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
+                match e.name().local_name().into_inner() {
                     b"colorScale" => {
                         let mut obj = ColorScale::default();
                         obj.set_attributes(reader, e);
@@ -317,7 +317,7 @@ impl ConditionalFormattingRule {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"cfRule" {
+                if e.name().local_name().into_inner() == b"cfRule" {
                     return
                 }
             },

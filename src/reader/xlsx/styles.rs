@@ -21,7 +21,7 @@ pub fn read<R: io::Read + io::Seek>(
     xml_read_loop!(
         reader,
         Event::Start(ref e) => {
-            if e.name().into_inner() == b"styleSheet" {
+            if e.name().local_name().into_inner() == b"styleSheet" {
                 let mut obj = Stylesheet::default();
                 obj.set_attributes(&mut reader, e);
                 obj.make_style();

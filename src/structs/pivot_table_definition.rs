@@ -402,46 +402,46 @@ impl PivotTableDefinition {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"location" {
+                if e.name().local_name().into_inner() == b"location" {
                     let mut obj = Location::default();
                     obj.set_attributes(reader, e);
                     self.set_location(obj);
                 }
-                if e.name().into_inner() == b"pivotTableStyleInfo" {
+                if e.name().local_name().into_inner() == b"pivotTableStyleInfo" {
                     let mut obj = PivotTableStyle::default();
                     obj.set_attributes(reader, e);
                     self.set_pivot_table_style(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"pivotFields" {
+                if e.name().local_name().into_inner() == b"pivotFields" {
                     let mut obj = PivotFields::default();
                     obj.set_attributes(reader, e);
                     self.set_pivot_fields(obj);
                 }
-                if e.name().into_inner() == b"rowItems" {
+                if e.name().local_name().into_inner() == b"rowItems" {
                     let mut obj = RowItems::default();
                     obj.set_attributes(reader, e);
                     self.set_row_items(obj);
                 }
-                if e.name().into_inner() == b"colFields" {
+                if e.name().local_name().into_inner() == b"colFields" {
                     let mut obj = ColumnFields::default();
                     obj.set_attributes(reader, e);
                     self.set_column_fields(obj);
                 }
-                if e.name().into_inner() == b"colItems" {
+                if e.name().local_name().into_inner() == b"colItems" {
                     let mut obj = ColumnItems::default();
                     obj.set_attributes(reader, e);
                     self.set_column_items(obj);
                 }
-                if e.name().into_inner() == b"dataFields" {
+                if e.name().local_name().into_inner() == b"dataFields" {
                     let mut obj = DataFields::default();
                     obj.set_attributes(reader, e);
                     self.set_data_fields(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"pivotTableDefinition" {
+                if e.name().local_name().into_inner() == b"pivotTableDefinition" {
                     return
                 }
             },

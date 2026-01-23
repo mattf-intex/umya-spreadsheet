@@ -126,41 +126,41 @@ impl OfPieChart {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().0 {
-                    b"c:ser" => {
+                match e.name().local_name().into_inner() {
+                    b"ser" => {
                         let mut obj = AreaChartSeries::default();
                         obj.set_attributes(reader, e);
                         self.get_area_chart_series_list_mut()
                             .add_area_chart_series(obj);
                         }
-                    b"c:dLbls" => {
+                    b"dLbls" => {
                         self.data_labels.set_attributes(reader, e);
                     }
-                    b"c:serLines" => {
+                    b"serLines" => {
                         self.series_lines.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::Empty(ref e) => {
-                match e.name().0 {
-                    b"c:ofPieType" => {
+                match e.name().local_name().into_inner() {
+                    b"ofPieType" => {
                         self.of_pie_type.set_attributes(reader, e);
                     }
-                    b"c:varyColors" => {
+                    b"varyColors" => {
                         self.vary_colors.set_attributes(reader, e);
                     }
-                    b"c:gapWidth" => {
+                    b"gapWidth" => {
                         self.gap_width.set_attributes(reader, e);
                     }
-                    b"c:secondPieSize" => {
+                    b"secondPieSize" => {
                         self.second_pie_size.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:ofPieChart" {
+                if e.name().local_name().into_inner() == b"ofPieChart" {
                     return;
                 }
             },

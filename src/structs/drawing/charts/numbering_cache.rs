@@ -36,12 +36,12 @@ impl NumberingCache {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().0 == b"c:formatCode" {
+                if e.name().local_name().into_inner() == b"formatCode" {
                     self.format_code.set_attributes(reader, e);
                 }
             },
             Event::End(ref e) => {
-               if e.name().0 == b"c:numCache" {
+               if e.name().local_name().into_inner() == b"numCache" {
                    return;
                }
             },

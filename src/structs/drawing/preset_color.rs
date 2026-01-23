@@ -49,14 +49,14 @@ impl PresetColor {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:alpha" {
+                if e.name().local_name().into_inner() == b"alpha" {
                     let mut alpha = Alpha::default();
                     alpha.set_attributes(reader, e);
                     self.set_alpha(alpha);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:prstClr" {
+                if e.name().local_name().into_inner() == b"prstClr" {
                     return
                 }
             },

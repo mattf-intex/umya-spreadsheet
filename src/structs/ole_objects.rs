@@ -40,14 +40,14 @@ impl OleObjects {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"mc:AlternateContent" {
+                if e.name().local_name().into_inner() == b"AlternateContent" {
                     let mut obj = OleObject::default();
                     obj.set_attributes(reader, e, relationships);
                     self.set_ole_object(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"oleObjects" {
+                if e.name().local_name().into_inner() == b"oleObjects" {
                     return
                 }
             },

@@ -2147,3 +2147,37 @@ fn non_self_closing_sheet_tags() {
     assert_eq!(book_lazy.get_sheet_mut(&0).unwrap().get_name(), "Data");
     assert_eq!(book_lazy.get_sheet_mut(&1).unwrap().get_name(), "Summary");
 }
+
+/// Test reading XLSX files where spreadsheetml elements use namespace prefix (e.g., x:row, x:c)
+/// Per ECMA-376, namespace prefixes are arbitrary and should not affect parsing.
+/// This test verifies that files using prefixed element names (like x:workbook, x:sheet,
+/// x:row, x:c, x:v, x:sst, x:si, x:t) are parsed correctly.
+#[test]
+fn namespace_prefixed_elements() {
+    let path = std::path::Path::new("./tests/test_files/namespace_prefixed_elements.xlsx");
+    let book = umya_spreadsheet::reader::xlsx::read(path).unwrap();
+
+    // Verify sheet was found
+    assert_eq!(book.get_sheet_count(), 1);
+    assert_eq!(book.get_sheet(&0).unwrap().get_name(), "TestData");
+
+    // Verify cell data (shared strings and numeric values)
+    let sheet = book.get_sheet(&0).unwrap();
+    assert_eq!(sheet.get_value("A1"), "Header1");
+    assert_eq!(sheet.get_value("B1"), "Header2");
+    assert_eq!(sheet.get_value("C1"), "Header3");
+    assert_eq!(sheet.get_value("A2"), "Alpha");
+    assert_eq!(sheet.get_value("B2"), "42");
+    assert_eq!(sheet.get_value("C2"), "CategoryX");
+    assert_eq!(sheet.get_value("A3"), "Beta");
+    assert_eq!(sheet.get_value("B3"), "99");
+    assert_eq!(sheet.get_value("C3"), "CategoryY");
+
+    // Test with lazy_read
+    let mut book_lazy = umya_spreadsheet::reader::xlsx::lazy_read(path).unwrap();
+    assert_eq!(book_lazy.get_sheet_count(), 1);
+    let sheet_lazy = book_lazy.get_sheet_mut(&0).unwrap();
+    assert_eq!(sheet_lazy.get_name(), "TestData");
+    assert_eq!(sheet_lazy.get_value("A1"), "Header1");
+    assert_eq!(sheet_lazy.get_value("B2"), "42");
+}

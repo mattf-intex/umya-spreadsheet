@@ -85,14 +85,14 @@ impl RowItem {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"x" {
+                if e.name().local_name().into_inner() == b"x" {
                     let mut obj = MemberPropertyIndex::default();
                     obj.set_attributes(reader, e);
                     self.set_member_property_index_color(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"i" {
+                if e.name().local_name().into_inner() == b"i" {
                     return
                 }
             },

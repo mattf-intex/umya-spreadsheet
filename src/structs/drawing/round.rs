@@ -23,7 +23,7 @@ impl Round {
         xml_read_loop!(
             reader,
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:round" {
+                if e.name().local_name().into_inner() == b"round" {
                     return;
                 }
             },

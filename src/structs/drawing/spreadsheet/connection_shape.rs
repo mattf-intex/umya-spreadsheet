@@ -96,22 +96,22 @@ impl ConnectionShape {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"xdr:nvCxnSpPr" => {
+                match e.name().local_name().into_inner() {
+                    b"nvCxnSpPr" => {
                         self.non_visual_connection_shape_properties
                             .set_attributes(reader, e);
                         }
-                    b"xdr:spPr" => {
+                    b"spPr" => {
                         self.shape_properties.set_attributes(reader, e, drawing_relationships);
                     }
-                    b"xdr:style" => {
+                    b"style" => {
                         self.shape_style.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:cxnSp" {
+                if e.name().local_name().into_inner() == b"cxnSp" {
                     return;
                 }
             },

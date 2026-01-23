@@ -116,8 +116,8 @@ impl TextParagraphPropertiesType {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:defRPr" => {
+                match e.name().local_name().into_inner() {
+                    b"defRPr" => {
                         let mut obj = RunProperties::default();
                         obj.set_attributes(reader, e, true);
                         self.set_default_run_properties(obj);
@@ -126,18 +126,18 @@ impl TextParagraphPropertiesType {
                 }
             },
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                b"a:spcBef" => {
+                match e.name().local_name().into_inner() {
+                b"spcBef" => {
                     let mut obj = SpaceBefore::default();
                     obj.set_attributes(reader, e);
                     self.set_space_before(obj);
                 }
-                b"a:spcAft" => {
+                b"spcAft" => {
                     let mut obj = SpaceAfter::default();
                     obj.set_attributes(reader, e);
                     self.set_space_after(obj);
                 }
-                b"a:defRPr" => {
+                b"defRPr" => {
                     let mut obj = RunProperties::default();
                     obj.set_attributes(reader, e, false);
                     self.set_default_run_properties(obj);
@@ -146,17 +146,17 @@ impl TextParagraphPropertiesType {
                 }
             },
             Event::End(ref e) => {
-                match e.name().into_inner() {
-                    b"a:defPPr"  => return,
-                    b"a:lvl1pPr" => return,
-                    b"a:lvl2pPr" => return,
-                    b"a:lvl3pPr" => return,
-                    b"a:lvl4pPr" => return,
-                    b"a:lvl5pPr" => return,
-                    b"a:lvl6pPr" => return,
-                    b"a:lvl7pPr" => return,
-                    b"a:lvl8pPr" => return,
-                    b"a:lvl9pPr" => return,
+                match e.name().local_name().into_inner() {
+                    b"defPPr"  => return,
+                    b"lvl1pPr" => return,
+                    b"lvl2pPr" => return,
+                    b"lvl3pPr" => return,
+                    b"lvl4pPr" => return,
+                    b"lvl5pPr" => return,
+                    b"lvl6pPr" => return,
+                    b"lvl7pPr" => return,
+                    b"lvl8pPr" => return,
+                    b"lvl9pPr" => return,
                     _ =>()
                 }
             },

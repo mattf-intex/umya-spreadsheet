@@ -38,21 +38,21 @@ impl SheetViews {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"sheetView" {
+                if e.name().local_name().into_inner() == b"sheetView" {
                     let mut obj = SheetView::default();
                     obj.set_attributes(reader, e, true);
                     self.add_sheet_view_list_mut(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"sheetView" {
+                if e.name().local_name().into_inner() == b"sheetView" {
                     let mut obj = SheetView::default();
                     obj.set_attributes(reader, e, false);
                     self.add_sheet_view_list_mut(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"sheetViews" {
+                if e.name().local_name().into_inner() == b"sheetViews" {
                     return
                 }
             },

@@ -38,21 +38,21 @@ impl CellStyleFormats {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"xf" {
+                if e.name().local_name().into_inner() == b"xf" {
                     let mut obj = CellFormat::default();
                     obj.set_attributes(reader, e, true);
                     self.set_cell_format(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"xf" {
+                if e.name().local_name().into_inner() == b"xf" {
                     let mut obj = CellFormat::default();
                     obj.set_attributes(reader, e, false);
                     self.set_cell_format(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"cellStyleXfs" {
+                if e.name().local_name().into_inner() == b"cellStyleXfs" {
                     return
                 }
             },

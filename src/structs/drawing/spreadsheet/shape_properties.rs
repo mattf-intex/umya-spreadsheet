@@ -198,41 +198,41 @@ impl ShapeProperties {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                match e.name().into_inner() {
-                    b"a:xfrm" => {
+                match e.name().local_name().into_inner() {
+                    b"xfrm" => {
                         let mut obj = Transform2D::default();
                         obj.set_attributes(reader, e);
                         self.set_transform2d(obj);
                     }
-                    b"a:prstGeom" => {
+                    b"prstGeom" => {
                         self.preset_geometry.set_attributes(reader, e);
                     }
-                    b"a:blipFill" => {
+                    b"blipFill" => {
                         let mut obj = BlipFill::default();
                         obj.set_attributes(reader, e, drawing_relationships);
                         self.set_blip_fill(obj);
                     }
-                    b"a:gradFill" => {
+                    b"gradFill" => {
                         let mut obj = GradientFill::default();
                         obj.set_attributes(reader, e);
                         self.set_gradient_fill(obj);
                     }
-                    b"a:ln" => {
+                    b"ln" => {
                         let mut outline = Outline::default();
                         outline.set_attributes(reader, e);
                         self.set_outline(outline);
                     }
-                    b"a:solidFill" => {
+                    b"solidFill" => {
                         let mut solid_fill = SolidFill::default();
                         solid_fill.set_attributes(reader, e);
                         self.set_solid_fill(solid_fill);
                     }
-                    b"a:effectLst" => {
+                    b"effectLst" => {
                         let mut effect_list = EffectList::default();
                         effect_list.set_attributes(reader, e, false);
                         self.set_effect_list(effect_list);
                     }
-                    b"a:extLst" => {
+                    b"extLst" => {
                         let mut obj = ExtensionList::default();
                         obj.set_attributes(reader, e);
                         self.set_extension_list(obj);
@@ -241,14 +241,14 @@ impl ShapeProperties {
                 }
             },
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:noFill" {
+                if e.name().local_name().into_inner() == b"noFill" {
                     let mut obj = NoFill::default();
                     obj.set_attributes(reader, e, true);
                     self.set_no_fill(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"xdr:spPr" {
+                if e.name().local_name().into_inner() == b"spPr" {
                     return;
                 }
             },

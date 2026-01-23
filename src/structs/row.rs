@@ -183,7 +183,7 @@ impl Row {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"c" {
+                if e.name().local_name().into_inner() == b"c" {
                     let mut obj = Cell::default();
                     let actual_col = obj.set_attributes(
                         reader, e, shared_string_table, stylesheet, true, formula_shared_list,
@@ -194,7 +194,7 @@ impl Row {
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"c" {
+                if e.name().local_name().into_inner() == b"c" {
                     let mut obj = Cell::default();
                     let actual_col = obj.set_attributes(
                         reader, e, shared_string_table, stylesheet, false, formula_shared_list,
@@ -205,7 +205,7 @@ impl Row {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"row" {
+                if e.name().local_name().into_inner() == b"row" {
                     return row_num;
                 }
             },

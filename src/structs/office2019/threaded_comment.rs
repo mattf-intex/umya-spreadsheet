@@ -65,12 +65,12 @@ impl ThreadedComment {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"text" {
+                if e.name().local_name().into_inner() == b"text" {
                     self.threaded_comment_text.set_attributes(reader, e);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"threadedComment" {
+                if e.name().local_name().into_inner() == b"threadedComment" {
                     return
                 }
             },

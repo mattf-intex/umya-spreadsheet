@@ -40,7 +40,7 @@ impl Visible {
                 self.value.set_value_string(e.unescape().unwrap());
             },
             Event::End(ref e) => {
-                if e.name().0 == b"x:Visible" {
+                if e.name().local_name().into_inner() == b"Visible" {
                     return
                 }
             },

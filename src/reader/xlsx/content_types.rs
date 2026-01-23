@@ -18,7 +18,7 @@ pub(crate) fn read<R: io::Read + io::Seek>(
     xml_read_loop!(
         reader,
         Event::Empty(ref e) => {
-            if e.name().into_inner() == b"Override" {
+            if e.name().local_name().into_inner() == b"Override" {
                 let part_name = get_attribute(e, b"PartName").unwrap();
                 let content_type = get_attribute(e, b"ContentType").unwrap();
                 list.push((part_name, content_type));

@@ -50,17 +50,17 @@ impl NumberReference {
     ) {
         xml_read_loop!(
             reader,
-            Event::Start(ref e) => match e.name().0 {
-                b"c:f" => {
+            Event::Start(ref e) => match e.name().local_name().into_inner() {
+                b"f" => {
                     self.formula.set_attributes(reader, e);
                 }
-                b"c:numCache" => {
+                b"numCache" => {
                     self.numbering_cache.set_attributes(reader, e);
                 }
                 _ => (),
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:numRef" {
+                if e.name().local_name().into_inner() == b"numRef" {
                     return;
                 }
             },

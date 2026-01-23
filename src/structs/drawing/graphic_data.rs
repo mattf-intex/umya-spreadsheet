@@ -42,7 +42,7 @@ impl GraphicData {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"c:chart" {
+                if e.name().local_name().into_inner() == b"chart" {
                     let chart_id = get_attribute(e, b"r:id").unwrap();
                     let relationship = drawing_relationships
                         .unwrap()
@@ -51,7 +51,7 @@ impl GraphicData {
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:graphicData" {
+                if e.name().local_name().into_inner() == b"graphicData" {
                     return;
                 }
             },

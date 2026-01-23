@@ -18,7 +18,7 @@ pub(crate) fn read(
     xml_read_loop!(
         reader,
         Event::Start(ref e) => {
-            if e.name().into_inner() == b"c:chartSpace" {
+            if e.name().local_name().into_inner() == b"chartSpace" {
                 chart_space.set_attributes(&mut reader, e);
             }
         },

@@ -18,7 +18,7 @@ pub fn read<R: io::Read + io::Seek>(
     xml_read_loop!(
         reader,
         Event::Start(ref e) => {
-            if e.name().into_inner() == b"a:theme" {
+            if e.name().local_name().into_inner() == b"theme" {
                 theme.set_attributes(&mut reader, e);
             }
         },

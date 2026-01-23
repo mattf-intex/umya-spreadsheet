@@ -96,17 +96,17 @@ impl FromMarker {
         xml_read_loop!(
             reader,
             Event::Text(e) => string_value = e.unescape().unwrap().to_string(),
-            Event::End(ref e) => match e.name().into_inner() {
-                b"xdr:col" => {
+            Event::End(ref e) => match e.name().local_name().into_inner() {
+                b"col" => {
                     self.col = string_value.parse::<usize>().unwrap();
                 }
-                b"xdr:colOff" => {
+                b"colOff" => {
                     self.col_off = string_value.parse::<usize>().unwrap();
                 }
-                b"xdr:row" => {
+                b"row" => {
                     self.row = string_value.parse::<usize>().unwrap();
                 }
-                b"xdr:rowOff" => {
+                b"rowOff" => {
                     self.row_off = string_value.parse::<usize>().unwrap();
                 }
                 b"from" => return,

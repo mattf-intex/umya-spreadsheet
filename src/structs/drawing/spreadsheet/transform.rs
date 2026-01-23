@@ -92,18 +92,18 @@ impl Transform {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                match e.name().into_inner() {
-                    b"a:off" => {
+                match e.name().local_name().into_inner() {
+                    b"off" => {
                         self.offset.set_attributes(reader, e);
                     }
-                    b"a:ext" => {
+                    b"ext" => {
                         self.extents.set_attributes(reader, e);
                     }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
-                if  e.name().into_inner() == b"xdr:xfrm" {
+                if  e.name().local_name().into_inner() == b"xfrm" {
                     return;
                 }
             },

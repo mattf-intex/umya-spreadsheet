@@ -35,12 +35,12 @@ impl StringPoint {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().0 == b"c:v" {
+                if e.name().local_name().into_inner() == b"v" {
                     self.numeric_value.set_attributes(reader, e);
                 }
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:pt" {
+                if e.name().local_name().into_inner() == b"pt" {
                     return;
                 }
             },

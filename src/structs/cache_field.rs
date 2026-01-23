@@ -58,14 +58,14 @@ impl CacheField {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"sharedItems" {
+                if e.name().local_name().into_inner() == b"sharedItems" {
                     let mut obj = SharedItems::default();
                     obj.set_attributes(reader, e);
                     self.set_shared_items(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"cacheField" {
+                if e.name().local_name().into_inner() == b"cacheField" {
                     return
                 }
             },

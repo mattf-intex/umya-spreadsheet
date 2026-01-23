@@ -38,14 +38,14 @@ impl DataFields {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"dataField" {
+                if e.name().local_name().into_inner() == b"dataField" {
                     let mut obj = DataField::default();
                     obj.set_attributes(reader, e);
                     self.add_list_mut(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"dataFields" {
+                if e.name().local_name().into_inner() == b"dataFields" {
                     return
                 }
             },

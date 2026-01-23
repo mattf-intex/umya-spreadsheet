@@ -275,78 +275,78 @@ impl DateAxis {
     ) {
         xml_read_loop!(
             reader,
-            Event::Start(ref e) => match e.name().0 {
-                b"c:scaling" => {
+            Event::Start(ref e) => match e.name().local_name().into_inner() {
+                b"scaling" => {
                     self.scaling.set_attributes(reader, e);
                 }
-                b"c:title" => {
+                b"title" => {
                     let mut obj = Title::default();
                     obj.set_attributes(reader, e);
                     self.set_title(obj);
                 }
-                b"c:spPr" => {
+                b"spPr" => {
                     let mut obj = ShapeProperties::default();
                     obj.set_attributes(reader, e);
                     self.set_shape_properties(obj);
                 }
-                b"c:txPr" => {
+                b"txPr" => {
                     let mut obj = TextProperties::default();
                     obj.set_attributes(reader, e);
                     self.set_text_properties(obj);
                 }
-                b"c:majorGridlines" => {
+                b"majorGridlines" => {
                     let mut obj = MajorGridlines::default();
                     obj.set_attributes(reader, e, false);
                     self.set_major_gridlines(obj);
                 }
                 _ => (),
             },
-            Event::Empty(ref e) => match e.name().0 {
-                b"c:auto" => {
+            Event::Empty(ref e) => match e.name().local_name().into_inner() {
+                b"auto" => {
                     self.auto_labeled.set_attributes(reader, e);
                 }
-                b"c:axId" => {
+                b"axId" => {
                     self.axis_id.set_attributes(reader, e);
                 }
-                b"c:delete" => {
+                b"delete" => {
                     self.delete.set_attributes(reader, e);
                 }
-                b"c:axPos" => {
+                b"axPos" => {
                     self.axis_position.set_attributes(reader, e);
                 }
-                b"c:majorGridlines" => {
+                b"majorGridlines" => {
                     let mut obj = MajorGridlines::default();
                     obj.set_attributes(reader, e, true);
                     self.set_major_gridlines(obj);
                 }
-                b"c:numFmt" => {
+                b"numFmt" => {
                     self.numbering_format.set_attributes(reader, e);
                 }
-                b"c:majorTickMark" => {
+                b"majorTickMark" => {
                     self.major_tick_mark.set_attributes(reader, e);
                 }
-                b"c:minorTickMark" => {
+                b"minorTickMark" => {
                     self.minor_tick_mark.set_attributes(reader, e);
                 }
-                b"c:tickLblPos" => {
+                b"tickLblPos" => {
                     self.tick_label_position.set_attributes(reader, e);
                 }
-                b"c:crossAx" => {
+                b"crossAx" => {
                     self.crossing_axis.set_attributes(reader, e);
                 }
-                b"c:crosses" => {
+                b"crosses" => {
                     self.crosses.set_attributes(reader, e);
                 }
-                b"c:lblOffset" => {
+                b"lblOffset" => {
                     self.label_offset.set_attributes(reader, e);
                 }
-                b"c:baseTimeUnit" => {
+                b"baseTimeUnit" => {
                     self.base_time_unit.set_attributes(reader, e);
                 }
                 _ => (),
             },
             Event::End(ref e) => {
-                if e.name().0 == b"c:dateAx" {
+                if e.name().local_name().into_inner() == b"dateAx" {
                     return;
                 }
             },

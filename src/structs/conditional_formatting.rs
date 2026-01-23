@@ -72,21 +72,21 @@ impl ConditionalFormatting {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"cfRule" {
+                if e.name().local_name().into_inner() == b"cfRule" {
                     let mut obj = ConditionalFormattingRule::default();
                     obj.set_attributes(reader, e, differential_formats, true);
                     self.conditional_collection.push(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"cfRule" {
+                if e.name().local_name().into_inner() == b"cfRule" {
                     let mut obj = ConditionalFormattingRule::default();
                     obj.set_attributes(reader, e, differential_formats, false);
                     self.conditional_collection.push(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"conditionalFormatting" {
+                if e.name().local_name().into_inner() == b"conditionalFormatting" {
                     return
                 }
             },

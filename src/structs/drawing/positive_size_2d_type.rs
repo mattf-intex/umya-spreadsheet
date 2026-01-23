@@ -52,9 +52,9 @@ impl PositiveSize2DType {
         xml_read_loop!(
             reader,
             Event::End(ref e) => {
-                match e.name().into_inner() {
-                    b"a:ext" => return,
-                    b"a:chExt" => return,
+                match e.name().local_name().into_inner() {
+                    b"ext" => return,
+                    b"chExt" => return,
                     _ => (),
                 }
             },

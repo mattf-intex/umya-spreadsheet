@@ -43,14 +43,14 @@ impl Layout {
         xml_read_loop!(
             reader,
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"c:manualLayout" {
+                if e.name().local_name().into_inner() == b"manualLayout" {
                     let mut obj = ManualLayout::default();
                     obj.set_attributes(reader, e);
                     self.set_manual_layout(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"c:layout" {
+                if e.name().local_name().into_inner() == b"layout" {
                     return;
                 }
             },

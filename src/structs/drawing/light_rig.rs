@@ -72,14 +72,14 @@ impl LightRig {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"a:rot" {
+                if e.name().local_name().into_inner() == b"rot" {
                     let mut obj = Rotation::default();
                     obj.set_attributes(reader, e);
                     self.rotation = Some(Box::new(obj));
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"a:lightRig" {
+                if e.name().local_name().into_inner() == b"lightRig" {
                     return
                 }
             },

@@ -48,21 +48,21 @@ impl DataValidations {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"x14:dataValidation" {
+                if e.name().local_name().into_inner() == b"dataValidation" {
                     let mut obj = DataValidation::default();
                     obj.set_attributes(reader, e, true);
                     self.add_data_validation_list(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"x14:dataValidation" {
+                if e.name().local_name().into_inner() == b"dataValidation" {
                     let mut obj = DataValidation::default();
                     obj.set_attributes(reader, e, false);
                     self.add_data_validation_list(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"x14:dataValidations" {
+                if e.name().local_name().into_inner() == b"dataValidations" {
                     return
                 }
             },

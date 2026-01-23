@@ -153,26 +153,26 @@ impl PivotCacheDefinition {
         xml_read_loop!(
             reader,
             Event::Empty(ref e) => {
-                if e.name().into_inner() == b"cacheSource" {
+                if e.name().local_name().into_inner() == b"cacheSource" {
                     let mut obj = CacheSource::default();
                     obj.set_attributes(reader, e, true);
                     self.set_cache_source(obj);
                 }
             },
             Event::Start(ref e) => {
-                if e.name().into_inner() == b"cacheSource" {
+                if e.name().local_name().into_inner() == b"cacheSource" {
                     let mut obj = CacheSource::default();
                     obj.set_attributes(reader, e, false);
                     self.set_cache_source(obj);
                 }
-                if e.name().into_inner() == b"cacheFields" {
+                if e.name().local_name().into_inner() == b"cacheFields" {
                     let mut obj = CacheFields::default();
                     obj.set_attributes(reader, e);
                     self.set_cache_fields(obj);
                 }
             },
             Event::End(ref e) => {
-                if e.name().into_inner() == b"pivotTableDefinition" {
+                if e.name().local_name().into_inner() == b"pivotTableDefinition" {
                     return
                 }
             },

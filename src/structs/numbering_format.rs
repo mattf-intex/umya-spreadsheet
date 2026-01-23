@@ -191,7 +191,7 @@ lazy_static! {
         map.insert(11, "0.00E+00".to_string());
         map.insert(12, "# ?/?".to_string());
         map.insert(13, "# ??/??".to_string());
-        map.insert(14, "m/d/yyyy".to_string()); // Despite ECMA 'mm-dd-yy");
+        map.insert(14, "mm/dd/yyyy".to_string()); // Despite ECMA 'mm-dd-yy");
         map.insert(15, "d-mmm-yy".to_string());
         map.insert(16, "d-mmm".to_string());
         map.insert(17, "mmm-yy".to_string());
@@ -199,7 +199,7 @@ lazy_static! {
         map.insert(19, "h:mm:ss AM/PM".to_string());
         map.insert(20, "h:mm".to_string());
         map.insert(21, "h:mm:ss".to_string());
-        map.insert(22, "m/d/yyyy h:mm".to_string()); // Despite ECMA 'm/d/yy h:mm");
+        map.insert(22, "mm/dd/yyyy h:mm".to_string()); // Despite ECMA 'm/d/yy h:mm");
 
         map.insert(37, "#,##0_);(#,##0)".to_string()); //  Despite ECMA '#,##0 ;(#,##0)");
         map.insert(38, "#,##0_);[Red](#,##0)".to_string()); //  Despite ECMA '#,##0 ;[Red](#,##0)");

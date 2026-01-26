@@ -89,6 +89,14 @@ impl NumberingFormats {
                     self.set_numbering_format(obj);
                 }
             },
+            Event::Start(ref e) => {
+                // Handle non-self-closing numFmt elements (e.g., <numFmt ...></numFmt>)
+                if e.name().local_name().into_inner() == b"numFmt" {
+                    let mut obj = NumberingFormat::default();
+                    obj.set_attributes(reader, e);
+                    self.set_numbering_format(obj);
+                }
+            },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"numFmts" {
                     return

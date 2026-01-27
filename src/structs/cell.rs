@@ -446,7 +446,9 @@ impl Cell {
                     },
                     b"is" => {
                         if type_value == "inlineStr" {
-                            self.set_value_crate(&string_value);
+                            // Use set_value_string_crate to preserve exact text value
+                            // (set_value_crate would try to parse as number, losing trailing zeros)
+                            self.set_value_string_crate(&string_value);
                         }
                     }
                     b"c" => return actual_col,

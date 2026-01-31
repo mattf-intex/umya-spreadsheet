@@ -14,6 +14,7 @@ use super::TimePeriodValues;
 use super::UInt32Value;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::BytesStart;
 use quick_xml::events::Event;
 use quick_xml::Reader;
@@ -265,7 +266,7 @@ impl ConditionalFormattingRule {
         e: &BytesStart,
         differential_formats: &DifferentialFormats,
         empty_flag: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, r#type, "type");
         set_string_from_xml!(self, e, operator, "operator");
 
@@ -286,10 +287,10 @@ impl ConditionalFormattingRule {
         set_string_from_xml!(self, e, equal_average, "equalAverage");
 
         if empty_flag {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -305,7 +306,7 @@ impl ConditionalFormattingRule {
                     }
                     b"iconSet" => {
                         let mut obj = IconSet::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.icon_set = Some(obj);
                     }
                     b"formula" => {
@@ -318,11 +319,13 @@ impl ConditionalFormattingRule {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"cfRule" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "cfRule")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find cfRule end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

@@ -4,6 +4,7 @@ use super::SequenceOfReferences;
 use crate::reader::driver::*;
 use crate::traits::AdjustmentCoordinate;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::BytesStart;
 use quick_xml::events::Event;
 use quick_xml::Reader;
@@ -64,34 +65,36 @@ impl ConditionalFormatting {
         reader: &mut Reader<R>,
         e: &BytesStart,
         differential_formats: &DifferentialFormats,
-    ) {
+    ) -> Result<(), XlsxError> {
         if let Some(v) = get_attribute(e, b"sqref") {
             self.sequence_of_references.set_sqref(v);
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"cfRule" {
                     let mut obj = ConditionalFormattingRule::default();
-                    obj.set_attributes(reader, e, differential_formats, true);
+                    obj.set_attributes(reader, e, differential_formats, true)?;
                     self.conditional_collection.push(obj);
                 }
             },
             Event::Start(ref e) => {
                 if e.name().local_name().into_inner() == b"cfRule" {
                     let mut obj = ConditionalFormattingRule::default();
-                    obj.set_attributes(reader, e, differential_formats, false);
+                    obj.set_attributes(reader, e, differential_formats, false)?;
                     self.conditional_collection.push(obj);
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"conditionalFormatting" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "conditionalFormatting")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find conditionalFormatting end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

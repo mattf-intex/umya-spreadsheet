@@ -70,6 +70,8 @@ pub enum XlsxError {
     Uft8(std::string::FromUtf8Error),
     /// Cell error
     CellError(String),
+    /// XML parsing error (missing element, unexpected structure, etc.)
+    XmlParse(String),
 }
 
 from_err!(std::io::Error, XlsxError, Io);
@@ -87,6 +89,7 @@ impl fmt::Display for XlsxError {
             Zip(s) => write!(f, "ZipError: {}", s),
             Uft8(s) => write!(f, "Uft8Error: {}", s),
             CellError(e) => write!(f, "Unsupported cell error value '{e}'"),
+            XmlParse(s) => write!(f, "XmlParseError: {}", s),
         }
     }
 }

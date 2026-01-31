@@ -24,6 +24,27 @@ macro_rules! xml_read_loop {
 
 pub(crate) use crate::xml_read_loop;
 
+/// Result-based version of xml_read_loop that returns errors instead of panicking.
+/// Use this in set_attributes methods that return Result<(), XlsxError>.
+#[macro_export]
+macro_rules! xml_read_loop_result {
+    ($reader:ident $(,$pat:pat => $result:expr)+ $(,)?) => {{
+        let mut buf = Vec::new();
+        loop {
+            let ev = $reader.read_event_into(&mut buf)?;
+
+            match ev {
+                $($pat => $result,)+
+                _ => (),
+            }
+
+            buf.clear();
+        }
+    }};
+}
+
+pub(crate) use crate::xml_read_loop_result;
+
 #[macro_export]
 macro_rules! set_string_from_xml {
     ($self:ident, $e:ident, $attr:ident, $xml_attr:expr) => {{

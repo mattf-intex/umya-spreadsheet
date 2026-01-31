@@ -76,17 +76,17 @@ impl IconSet {
                     }
                 },
                 Event::End(ref e) => {
-                    if e.name().local_name().into_inner() == b"dataBar" {
+                    if e.name().local_name().into_inner() == b"iconSet" {
                         return
                     }
                 },
-                Event::Eof => panic!("Error: Could not find {} end element", "dataBar")
+                Event::Eof => panic!("Error: Could not find {} end element", "iconSet")
         );
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {
-        // dataBar
-        write_start_tag(writer, "dataBar", vec![], false);
+        // iconSet
+        write_start_tag(writer, "iconSet", vec![], false);
 
         // cfvo
         for v in &self.cfvo_collection {
@@ -98,6 +98,6 @@ impl IconSet {
             v.write_to_color(writer);
         }
 
-        write_end_tag(writer, "dataBar");
+        write_end_tag(writer, "iconSet");
     }
 }

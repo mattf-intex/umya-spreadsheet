@@ -9,6 +9,8 @@ use super::UInt32Value;
 use crate::helper::formula::*;
 use crate::reader::driver::*;
 use crate::traits::AdjustmentValue;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::writer::driver::*;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
@@ -147,7 +149,7 @@ impl Row {
         formula_shared_list: &mut HashMap<u32, (String, Vec<FormulaToken>)>,
         empty_flag: bool,
         fallback_row_num: u32,
-    ) -> u32 {
+    ) -> Result<u32, XlsxError> {
         // Try to read row number from 'r' attribute, fall back to sequential position
         if let Some(v) = get_attribute(e, b"r") {
             self.row_num.set_value_string(v);
@@ -173,14 +175,14 @@ impl Row {
         let row_num = *self.row_num.get_value();
 
         if empty_flag {
-            return row_num;
+            return Ok(row_num);
         }
 
         // Track column position for cells without explicit 'r' attribute
         // Per ECMA-376, cells without 'r' should be positioned sequentially
         let mut col_index: u32 = 1;
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"c" {
@@ -206,14 +208,13 @@ impl Row {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"row" {
-                    return row_num;
+                    return Ok(row_num);
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "row")
-        );
-        // Note: Loop only exits via return or panic
-        #[allow(unreachable_code)]
-        row_num
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find row end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

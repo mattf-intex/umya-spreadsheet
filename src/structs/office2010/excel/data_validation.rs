@@ -9,6 +9,7 @@ use crate::structs::DataValidationValues;
 use crate::structs::EnumValue;
 use crate::structs::StringValue;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -171,7 +172,7 @@ impl DataValidation {
         reader: &mut Reader<R>,
         e: &BytesStart,
         empty_flg: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         if let Some(v) = get_attribute(e, b"type") {
             self.r#type.set_value_string(v);
         }
@@ -201,7 +202,7 @@ impl DataValidation {
         }
 
         if empty_flg {
-            return;
+            return Ok(());
         }
 
         let mut buf = Vec::new();
@@ -210,29 +211,31 @@ impl DataValidation {
                 Ok(Event::Start(ref e)) => match e.name().local_name().into_inner() {
                     b"formula1" => {
                         let mut obj = DataValidationForumla1::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.formula1 = Some(Box::new(obj));
                     }
                     b"formula2" => {
                         let mut obj = DataValidationForumla2::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.formula2 = Some(Box::new(obj));
                     }
                     b"sqref" => {
                         let mut obj = ReferenceSequence::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.reference_sequence = obj;
                     }
                     _ => (),
                 },
                 Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
-                    b"dataValidation" => return,
+                    b"dataValidation" => return Ok(()),
                     _ => (),
                 },
                 Ok(Event::Eof) => {
-                    panic!("Error: Could not find {} end element", "x14:dataValidation")
+                    return Err(XlsxError::XmlParse(
+                        "Could not find x14:dataValidation end element".into(),
+                    ))
                 }
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+                Err(e) => return Err(e.into()),
                 _ => (),
             }
             buf.clear();

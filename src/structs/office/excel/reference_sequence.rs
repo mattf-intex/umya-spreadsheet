@@ -3,6 +3,7 @@ use crate::reader::driver::*;
 use crate::structs::Coordinate;
 use crate::structs::Range;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -65,7 +66,7 @@ impl ReferenceSequence {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         let mut value: String = String::new();
         let mut buf = Vec::new();
         loop {
@@ -76,13 +77,16 @@ impl ReferenceSequence {
                 Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
                     b"sqref" => {
                         self.set_sqref(value);
-                        value = String::new();
-                        return;
+                        return Ok(());
                     }
                     _ => (),
                 },
-                Ok(Event::Eof) => panic!("Error: Could not find {} end element", "xm:sqref"),
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+                Ok(Event::Eof) => {
+                    return Err(XlsxError::XmlParse(
+                        "Could not find xm:sqref end element".into(),
+                    ))
+                }
+                Err(e) => return Err(e.into()),
                 _ => (),
             }
             buf.clear();

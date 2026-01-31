@@ -7,6 +7,7 @@ use super::SequenceOfReferences;
 use super::StringValue;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -171,7 +172,7 @@ impl DataValidation {
         reader: &mut Reader<R>,
         e: &BytesStart,
         empty_flg: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         if let Some(v) = get_attribute(e, b"type") {
             self.r#type.set_value_string(v);
         }
@@ -213,7 +214,7 @@ impl DataValidation {
         }
 
         if empty_flg {
-            return;
+            return Ok(());
         }
 
         let mut value: String = String::new();
@@ -230,11 +231,15 @@ impl DataValidation {
                     b"formula2" => {
                         self.formula2.set_value_string(std::mem::take(&mut value));
                     }
-                    b"dataValidation" => return,
+                    b"dataValidation" => return Ok(()),
                     _ => {}
                 },
-                Ok(Event::Eof) => panic!("Error: Could not find {} end element", "dataValidation"),
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+                Ok(Event::Eof) => {
+                    return Err(XlsxError::XmlParse(
+                        "Could not find dataValidation end element".into(),
+                    ))
+                }
+                Err(e) => return Err(e.into()),
                 _ => {}
             }
             buf.clear();

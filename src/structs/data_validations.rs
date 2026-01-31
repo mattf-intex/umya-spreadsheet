@@ -50,14 +50,14 @@ impl DataValidations {
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"dataValidation" {
                     let mut obj = DataValidation::default();
-                    obj.set_attributes(reader, e, true);
+                    obj.set_attributes(reader, e, true)?;
                     self.add_data_validation_list(obj);
                 }
             },
             Event::Start(ref e) => {
                 if e.name().local_name().into_inner() == b"dataValidation" {
                     let mut obj = DataValidation::default();
-                    obj.set_attributes(reader, e, false);
+                    obj.set_attributes(reader, e, false)?;
                     self.add_data_validation_list(obj);
                 }
             },

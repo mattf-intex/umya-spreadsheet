@@ -23,7 +23,7 @@ pub fn read<R: io::Read + io::Seek>(
         Event::Start(ref e) => {
             if e.name().local_name().into_inner() == b"styleSheet" {
                 let mut obj = Stylesheet::default();
-                obj.set_attributes(&mut reader, e);
+                obj.set_attributes(&mut reader, e)?;
                 obj.make_style();
                 spreadsheet.set_stylesheet(obj);
             }

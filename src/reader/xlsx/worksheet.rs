@@ -1,5 +1,6 @@
 use super::driver::*;
 use super::XlsxError;
+use crate::xml_read_loop_result;
 use quick_xml::events::Event;
 use quick_xml::Reader;
 use std::collections::HashMap;
@@ -79,7 +80,7 @@ pub(crate) fn read(
                     &mut formula_shared_list,
                     false,
                     row_index,
-                );
+                )?;
                 row_index = actual_row + 1;
                 worksheet.set_row_dimension(obj);
             }
@@ -181,7 +182,7 @@ pub(crate) fn read(
                     &mut formula_shared_list,
                     true,
                     row_index,
-                );
+                )?;
                 row_index = actual_row + 1;
                 worksheet.set_row_dimension(obj);
             }
@@ -238,7 +239,7 @@ pub(crate) fn read_lite(
     let mut formula_shared_list: HashMap<u32, (String, Vec<FormulaToken>)> = HashMap::new();
     // Track row index for rows without explicit 'r' attribute
     let mut row_index: u32 = 1;
-    xml_read_loop!(
+    xml_read_loop_result!(
         reader,
         Event::Start(ref e) => {
             if e.name().local_name().into_inner() == b"row" {
@@ -252,7 +253,7 @@ pub(crate) fn read_lite(
                     &mut formula_shared_list,
                     false,
                     row_index,
-                );
+                )?;
                 row_index = actual_row + 1;
             }
         },
@@ -268,14 +269,12 @@ pub(crate) fn read_lite(
                     &mut formula_shared_list,
                     true,
                     row_index,
-                );
+                )?;
                 row_index = actual_row + 1;
             }
         },
-        Event::Eof => break,
-    );
-
-    Ok(cells)
+        Event::Eof => return Ok(cells)
+    )
 }
 
 fn get_hyperlink(

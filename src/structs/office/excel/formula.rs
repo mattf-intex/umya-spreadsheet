@@ -2,6 +2,7 @@
 use crate::reader::driver::*;
 use crate::structs::Address;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -33,7 +34,7 @@ impl Formula {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         let mut value: String = String::new();
         let mut buf = Vec::new();
         loop {
@@ -46,13 +47,16 @@ impl Formula {
                         let mut obj = Address::default();
                         obj.set_address(value);
                         self.value = obj;
-                        value = String::new();
-                        return;
+                        return Ok(());
                     }
                     _ => (),
                 },
-                Ok(Event::Eof) => panic!("Error: Could not find {} end element", "xm:f"),
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+                Ok(Event::Eof) => {
+                    return Err(XlsxError::XmlParse(
+                        "Could not find xm:f end element".into(),
+                    ))
+                }
+                Err(e) => return Err(e.into()),
                 _ => (),
             }
             buf.clear();

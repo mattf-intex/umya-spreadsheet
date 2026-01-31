@@ -3,6 +3,7 @@ use crate::reader::driver::*;
 use crate::structs::office::excel::Formula;
 use crate::structs::Coordinate;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -34,25 +35,29 @@ impl DataValidationForumla2 {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         let mut buf = Vec::new();
         loop {
             match reader.read_event_into(&mut buf) {
                 Ok(Event::Start(ref e)) => match e.name().local_name().into_inner() {
                     b"f" => {
                         let mut obj = Formula::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.value = obj;
-                        return;
+                        return Ok(());
                     }
                     _ => (),
                 },
                 Ok(Event::End(ref e)) => match e.name().local_name().into_inner() {
-                    b"formula2" => return,
+                    b"formula2" => return Ok(()),
                     _ => (),
                 },
-                Ok(Event::Eof) => panic!("Error: Could not find {} end element", "x14:formula2"),
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+                Ok(Event::Eof) => {
+                    return Err(XlsxError::XmlParse(
+                        "Could not find x14:formula2 end element".into(),
+                    ))
+                }
+                Err(e) => return Err(e.into()),
                 _ => (),
             }
             buf.clear();

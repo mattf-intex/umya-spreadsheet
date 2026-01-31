@@ -14,6 +14,8 @@ use super::Style;
 use crate::helper::const_str::*;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -373,50 +375,52 @@ impl Stylesheet {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         self.numbering_formats.get_build_in_formats();
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"numFmts" => {
-                        self.numbering_formats.set_attributes(reader, e);
+                        self.numbering_formats.set_attributes(reader, e)?;
                     }
                     b"fonts" => {
-                        self.fonts.set_attributes(reader, e);
+                        self.fonts.set_attributes(reader, e)?;
                     }
                     b"fills" => {
-                        self.fills.set_attributes(reader, e);
+                        self.fills.set_attributes(reader, e)?;
                     }
                     b"borders" => {
-                        self.borders.set_attributes(reader, e);
+                        self.borders.set_attributes(reader, e)?;
                     }
                     b"cellStyleXfs" => {
-                        self.cell_style_formats.set_attributes(reader, e);
+                        self.cell_style_formats.set_attributes(reader, e)?;
                     }
                     b"cellXfs" => {
-                        self.cell_formats.set_attributes(reader, e);
+                        self.cell_formats.set_attributes(reader, e)?;
                     }
                     b"cellStyles" => {
-                        self.cell_styles.set_attributes(reader, e);
+                        self.cell_styles.set_attributes(reader, e)?;
                     }
                     b"dxfs" => {
-                        self.differential_formats.set_attributes(reader, e);
+                        self.differential_formats.set_attributes(reader, e)?;
                     }
                     b"colors" => {
-                        self.colors.set_attributes(reader, e);
+                        self.colors.set_attributes(reader, e)?;
                     }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"styleSheet" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "styleSheet")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find styleSheet end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

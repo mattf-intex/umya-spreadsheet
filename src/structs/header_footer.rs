@@ -3,6 +3,7 @@ use crate::reader::driver::*;
 use crate::structs::OddFooter;
 use crate::structs::OddHeader;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -56,8 +57,8 @@ impl HeaderFooter {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -72,11 +73,13 @@ impl HeaderFooter {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"headerFooter" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "headerFooter")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find headerFooter end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

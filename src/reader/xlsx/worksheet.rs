@@ -50,7 +50,7 @@ pub(crate) fn read(
             b"sheetViews" => {
                 worksheet
                     .get_sheet_views_mut()
-                    .set_attributes(&mut reader, e);
+                    .set_attributes(&mut reader, e)?;
             }
             b"sheetFormatPr" => {
                 worksheet
@@ -88,13 +88,13 @@ pub(crate) fn read(
             }
             b"cols" => {
                 let mut obj = Columns::default();
-                obj.set_attributes(&mut reader, e, stylesheet);
+                obj.set_attributes(&mut reader, e, stylesheet)?;
                 worksheet.set_column_dimensions_crate(obj);
             }
             b"mergeCells" => {
                 worksheet
                     .get_merge_cells_crate_mut()
-                    .set_attributes(&mut reader, e);
+                    .set_attributes(&mut reader, e)?;
             }
             b"conditionalFormatting" => {
                 let mut obj = ConditionalFormatting::default();
@@ -103,12 +103,12 @@ pub(crate) fn read(
             }
             b"dataValidations" => {
                 let mut obj = DataValidations::default();
-                obj.set_attributes(&mut reader, e);
+                obj.set_attributes(&mut reader, e)?;
                 worksheet.set_data_validations(obj);
             }
             b"dataValidations" => {
                 let mut obj = DataValidations2010::default();
-                obj.set_attributes(&mut reader, e);
+                obj.set_attributes(&mut reader, e)?;
                 worksheet.set_data_validations_2010(obj);
             }
             b"oleObjects" => {
@@ -123,17 +123,17 @@ pub(crate) fn read(
             b"headerFooter" => {
                 worksheet
                     .get_header_footer_mut()
-                    .set_attributes(&mut reader, e);
+                    .set_attributes(&mut reader, e)?;
             }
             b"rowBreaks" => {
                 worksheet
                     .get_row_breaks_mut()
-                    .set_attributes(&mut reader, e);
+                    .set_attributes(&mut reader, e)?;
             }
             b"colBreaks" => {
                 worksheet
                     .get_column_breaks_mut()
-                    .set_attributes(&mut reader, e);
+                    .set_attributes(&mut reader, e)?;
             }
             _ => (),
         },

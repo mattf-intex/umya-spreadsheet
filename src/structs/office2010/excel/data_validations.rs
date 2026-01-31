@@ -3,6 +3,7 @@ use crate::helper::const_str::*;
 use crate::reader::driver::*;
 use crate::structs::office2010::excel::DataValidation;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -44,8 +45,8 @@ impl DataValidations {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"dataValidation" {
@@ -63,11 +64,13 @@ impl DataValidations {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"dataValidations" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "x14:dataValidations")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find x14:dataValidations end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

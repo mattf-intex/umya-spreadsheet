@@ -296,12 +296,12 @@ impl ConditionalFormattingRule {
                 match e.name().local_name().into_inner() {
                     b"colorScale" => {
                         let mut obj = ColorScale::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.color_scale = Some(obj);
                     }
                     b"dataBar" => {
                         let mut obj = DataBar::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.data_bar = Some(obj);
                     }
                     b"iconSet" => {

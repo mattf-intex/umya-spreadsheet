@@ -1,6 +1,7 @@
 use crate::reader::driver::*;
 use crate::structs::StringValue;
 use crate::writer::driver::*;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -45,7 +46,7 @@ impl TextBox {
         &mut self,
         reader: &mut Reader<R>,
         e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, style, "style");
 
         let mut buf = Vec::new();
@@ -105,13 +106,14 @@ impl TextBox {
                     inner_text = format!("{}</{}>", inner_text, s);
                 }
                 Ok(Event::Eof) => break,
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+                Err(e) => return Err(e.into()),
                 _ => (),
             }
             buf.clear();
         }
         //reader.check_end_names(true);
         self.set_innder(inner_text);
+        Ok(())
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

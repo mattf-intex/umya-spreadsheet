@@ -8,6 +8,8 @@ use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
 use crate::traits::AdjustmentCoordinate;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -113,27 +115,27 @@ impl OneCellAnchor {
         reader: &mut Reader<R>,
         _e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"from" => {
-                        self.from_marker.set_attributes(reader, e);
+                        self.from_marker.set_attributes(reader, e)?;
                     }
                     b"grpSp" => {
                         let mut obj = GroupShape::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         self.set_group_shape(obj);
                     }
                     b"sp" => {
                         let mut obj = Shape::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         self.set_shape(obj);
                     }
                     b"pic" => {
                         let mut obj = Picture::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         self.set_picture(obj);
                     }
                     _ => (),
@@ -146,11 +148,13 @@ impl OneCellAnchor {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"oneCellAnchor" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:oneCellAnchor")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:oneCellAnchor end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

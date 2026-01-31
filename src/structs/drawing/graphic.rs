@@ -4,6 +4,8 @@ use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
 use crate::traits::AdjustmentCoordinateWithSheet;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -36,22 +38,24 @@ impl Graphic {
         reader: &mut Reader<R>,
         _e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 if e.name().local_name().into_inner() == b"graphicData" {
                     self.graphic_data
-                        .set_attributes(reader, e, drawing_relationships);
+                        .set_attributes(reader, e, drawing_relationships)?;
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"graphic" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:graphic")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:graphic end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

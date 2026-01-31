@@ -4,6 +4,8 @@ use super::Blip;
 use super::SourceRectangle;
 use super::Stretch;
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::structs::raw::RawRelationships;
 use crate::writer::driver::*;
 use quick_xml::events::{BytesStart, Event};
@@ -84,10 +86,10 @@ impl BlipFill {
         reader: &mut Reader<R>,
         e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, rotate_with_shape, "rotWithShape");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -117,10 +119,12 @@ impl BlipFill {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"blipFill" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:blipFill")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:blipFill end element".into()
+            ))
         );
     }
 

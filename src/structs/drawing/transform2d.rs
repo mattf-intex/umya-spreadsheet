@@ -3,7 +3,9 @@ use crate::reader::driver::*;
 use crate::structs::drawing::Point2DType;
 use crate::structs::drawing::PositiveSize2DType;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
 use crate::StringValue;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -115,7 +117,7 @@ impl Transform2D {
         &mut self,
         reader: &mut Reader<R>,
         e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         if let Some(v) = get_attribute(e, b"rot") {
             self.set_rot(v);
         }
@@ -128,7 +130,7 @@ impl Transform2D {
             self.set_flip_v(v);
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -174,11 +176,13 @@ impl Transform2D {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"xfrm" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:xfrm")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:xfrm end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

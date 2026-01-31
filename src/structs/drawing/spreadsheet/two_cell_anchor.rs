@@ -11,6 +11,8 @@ use crate::helper::const_str::MC_NS;
 use crate::helper::const_str::*;
 use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::structs::BooleanValue;
 use crate::traits::AdjustmentCoordinate;
 use crate::traits::AdjustmentCoordinateWithSheet;
@@ -195,42 +197,42 @@ impl TwoCellAnchor {
         reader: &mut Reader<R>,
         e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, edit_as, "editAs");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                 b"from" => {
-                    self.from_marker.set_attributes(reader, e);
+                    self.from_marker.set_attributes(reader, e)?;
                 }
                 b"to" => {
-                    self.to_marker.set_attributes(reader, e);
+                    self.to_marker.set_attributes(reader, e)?;
                 }
                 b"grpSp" => {
                     let mut obj = GroupShape::default();
-                    obj.set_attributes(reader, e, drawing_relationships);
+                    obj.set_attributes(reader, e, drawing_relationships)?;
                     self.set_group_shape(obj);
                 }
                 b"graphicFrame" => {
                     let mut obj = GraphicFrame::default();
-                    obj.set_attributes(reader, e, drawing_relationships);
+                    obj.set_attributes(reader, e, drawing_relationships)?;
                     self.set_graphic_frame(obj);
                 }
                 b"sp" => {
                     let mut obj = Shape::default();
-                    obj.set_attributes(reader, e, drawing_relationships);
+                    obj.set_attributes(reader, e, drawing_relationships)?;
                     self.set_shape(obj);
                 }
                 b"cxnSp" => {
                     let mut obj = ConnectionShape::default();
-                    obj.set_attributes(reader, e, drawing_relationships);
+                    obj.set_attributes(reader, e, drawing_relationships)?;
                     self.set_connection_shape(obj);
                 }
                 b"pic" => {
                     let mut obj = Picture::default();
-                    obj.set_attributes(reader, e, drawing_relationships);
+                    obj.set_attributes(reader, e, drawing_relationships)?;
                     self.set_picture(obj);
                 }
                 _ => (),
@@ -238,11 +240,13 @@ impl TwoCellAnchor {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"twoCellAnchor" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:twoCellAnchor")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:twoCellAnchor end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

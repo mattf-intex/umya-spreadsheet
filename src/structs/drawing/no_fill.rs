@@ -1,5 +1,7 @@
 // a:noFill
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::writer::driver::*;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
@@ -15,19 +17,21 @@ impl NoFill {
         reader: &mut Reader<R>,
         _: &BytesStart,
         empty_flag: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         if empty_flag {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"noFill" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:noFill")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:noFill end element".into()
+            ))
         );
     }
 

@@ -6,6 +6,8 @@ use super::super::Stretch;
 use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -84,19 +86,19 @@ impl BlipFill {
         reader: &mut Reader<R>,
         e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, rotate_with_shape, "rotWithShape");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"blip" => {
                         self.blip
-                            .set_attributes(reader, e, drawing_relationships.unwrap(), false);
+                            .set_attributes(reader, e, drawing_relationships.unwrap(), false)?;
                         }
                     b"stretch" => {
-                        self.stretch.set_attributes(reader, e);
+                        self.stretch.set_attributes(reader, e)?;
                     }
                     _ => (),
                 }
@@ -105,7 +107,7 @@ impl BlipFill {
                 match e.name().local_name().into_inner() {
                     b"blip" => {
                         self.blip
-                            .set_attributes(reader, e, drawing_relationships.unwrap(), true);
+                            .set_attributes(reader, e, drawing_relationships.unwrap(), true)?;
                         }
                     b"srcRect" => {
                         let mut source_rectangle = SourceRectangle::default();
@@ -117,11 +119,13 @@ impl BlipFill {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"blipFill" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:blipFill")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:blipFill end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

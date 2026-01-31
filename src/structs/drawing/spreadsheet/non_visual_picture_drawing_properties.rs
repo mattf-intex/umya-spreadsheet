@@ -3,6 +3,8 @@ use super::super::PictureLocks;
 use crate::reader::driver::*;
 use crate::structs::BooleanValue;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -45,14 +47,14 @@ impl NonVisualPictureDrawingProperties {
         reader: &mut Reader<R>,
         e: &BytesStart,
         empty_flag: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, prefer_relative_resize, "preferRelativeResize");
 
         if empty_flag {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"picLocks" {
@@ -63,11 +65,13 @@ impl NonVisualPictureDrawingProperties {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"cNvPicPr" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:cNvPicPr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:cNvPicPr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

@@ -8,6 +8,8 @@ use super::TwoCellAnchor;
 use crate::helper::const_str::*;
 use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::structs::Chart;
 use crate::structs::Image;
 use crate::structs::OleObjects;
@@ -246,11 +248,11 @@ impl WorksheetDrawing {
         _e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
         ole_objects: &mut OleObjects,
-    ) {
+    ) -> Result<(), XlsxError> {
         let mut ole_index = 0;
         let mut is_alternate_content = false;
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -262,7 +264,7 @@ impl WorksheetDrawing {
                             continue;
                         }
                         let mut obj = OneCellAnchor::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         if obj.is_image() {
                             let mut image = Image::default();
                             image.set_one_cell_anchor(obj);
@@ -281,12 +283,12 @@ impl WorksheetDrawing {
                                 reader,
                                 e,
                                 drawing_relationships,
-                            );
+                            )?;
                             ole_index += 1;
                             continue;
                         }
                         let mut obj = TwoCellAnchor::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         if obj.is_support() {
                             if obj.is_chart() {
                                 let mut chart = Chart::default();
@@ -310,13 +312,15 @@ impl WorksheetDrawing {
                     b"AlternateContent" => {
                         is_alternate_content = false;
                     }
-                    b"wsDr" => return,
+                    b"wsDr" => return Ok(()),
                     _ => (),
                 }
             },
 
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:wsDr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:wsDr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

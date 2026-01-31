@@ -3,6 +3,8 @@ use super::super::ListStyle;
 use super::super::Paragraph;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -66,24 +68,24 @@ impl TextBody {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"p" => {
                         let mut paragraph = Paragraph::default();
-                        paragraph.set_attributes(reader, e);
+                        paragraph.set_attributes(reader, e)?;
                         self.add_paragraph(paragraph);
                     }
                     b"bodyPr" => {
                         let mut body_properties = BodyProperties::default();
-                        body_properties.set_attributes(reader, e, false);
+                        body_properties.set_attributes(reader, e, false)?;
                         self.set_body_properties(body_properties);
                     }
                     b"lstStyle" => {
                         let mut obj = ListStyle::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.set_list_style(obj);
                     }
                     _ => (),
@@ -92,17 +94,19 @@ impl TextBody {
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"bodyPr" {
                     let mut body_properties = BodyProperties::default();
-                    body_properties.set_attributes(reader, e, true);
+                    body_properties.set_attributes(reader, e, true)?;
                     self.set_body_properties(body_properties);
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"txBody" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:txBody")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:txBody end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

@@ -6,6 +6,8 @@ use super::Shape;
 use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -88,25 +90,25 @@ impl GroupShape {
         reader: &mut Reader<R>,
         _e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"nvGrpSpPr" => {
-                        self.non_visual_group_shape_properties.set_attributes(reader, e);
+                        self.non_visual_group_shape_properties.set_attributes(reader, e)?;
                     }
                     b"grpSpPr" => {
-                        self.group_shape_properties.set_attributes(reader, e);
+                        self.group_shape_properties.set_attributes(reader, e)?;
                     }
                     b"pic" => {
                         let mut obj = Picture::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         self.add_picture_collection(obj);
                     }
                     b"sp" => {
                         let mut obj = Shape::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         self.add_shape_collection(obj);
                     }
                     _ => (),
@@ -114,11 +116,13 @@ impl GroupShape {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"grpSp" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:grpSp")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:grpSp end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

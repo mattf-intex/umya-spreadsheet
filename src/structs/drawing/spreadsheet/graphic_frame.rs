@@ -7,6 +7,8 @@ use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
 use crate::traits::AdjustmentCoordinateWithSheet;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -90,34 +92,36 @@ impl GraphicFrame {
         reader: &mut Reader<R>,
         e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, r#macro, "macro");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"nvGraphicFramePr" => {
                         self.non_visual_graphic_frame_properties
-                            .set_attributes(reader, e);
+                            .set_attributes(reader, e)?;
                         }
                     b"xfrm" => {
-                        self.transform.set_attributes(reader, e);
+                        self.transform.set_attributes(reader, e)?;
                     }
                     b"graphic" => {
                         self.graphic
-                            .set_attributes(reader, e, drawing_relationships);
+                            .set_attributes(reader, e, drawing_relationships)?;
                         }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
                 if  e.name().local_name().into_inner() == b"graphicFrame" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:graphicFrame")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:graphicFrame end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

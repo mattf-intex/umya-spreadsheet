@@ -6,6 +6,8 @@ use super::LinearGradientFill;
 use super::TileFlipValues;
 use super::TileRectangle;
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::writer::driver::*;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
@@ -96,11 +98,11 @@ impl GradientFill {
         &mut self,
         reader: &mut Reader<R>,
         e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, flip, "flip");
         set_string_from_xml!(self, e, rotate_with_shape, "rotWithShape");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -137,10 +139,12 @@ impl GradientFill {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"gradFill" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:gradFill")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:gradFill end element".into()
+            ))
         );
     }
 

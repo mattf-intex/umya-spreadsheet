@@ -4,6 +4,8 @@ use super::super::super::StringValue;
 use super::super::super::UInt32Value;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -55,25 +57,27 @@ impl NonVisualDrawingProperties {
         reader: &mut Reader<R>,
         e: &BytesStart,
         empty_flg: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         self.id.set_value_string(get_attribute(e, b"id").unwrap());
         self.name
             .set_value_string(get_attribute(e, b"name").unwrap());
         set_string_from_xml!(self, e, hidden, "hidden");
 
         if empty_flg {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"cNvPr" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:cNvPr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:cNvPr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>, ole_id: &usize) {

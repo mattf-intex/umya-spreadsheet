@@ -2,6 +2,8 @@
 use super::super::{Extents, Offset};
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::{BooleanValue, Int32Value};
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
@@ -84,12 +86,12 @@ impl Transform {
         &mut self,
         reader: &mut Reader<R>,
         e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, rotation, "rot");
         set_string_from_xml!(self, e, horizontal_flip, "flipH");
         set_string_from_xml!(self, e, vertical_flip, "flipV");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -104,11 +106,13 @@ impl Transform {
             },
             Event::End(ref e) => {
                 if  e.name().local_name().into_inner() == b"xfrm" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:xfrm")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:xfrm end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

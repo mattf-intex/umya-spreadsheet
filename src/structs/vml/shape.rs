@@ -8,6 +8,8 @@ use super::Stroke;
 use super::TextBox;
 use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::structs::EnumValue;
 use crate::structs::Int32Value;
 use crate::structs::StringValue;
@@ -227,7 +229,7 @@ impl Shape {
         reader: &mut Reader<R>,
         e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, r_type, "type");
         set_string_from_xml!(self, e, style, "style");
         set_string_from_xml!(self, e, filled, "filled");
@@ -239,7 +241,7 @@ impl Shape {
         set_string_from_xml!(self, e, optional_number, "o:spt");
         set_string_from_xml!(self, e, coordinate_size, "coordsize");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -275,7 +277,7 @@ impl Shape {
                 match e.name().local_name().into_inner() {
                 b"textbox" => {
                     let mut obj = TextBox::default();
-                    obj.set_attributes(reader, e);
+                    obj.set_attributes(reader, e)?;
                     self.set_text_box(obj);
                 }
                 b"ClientData" => {
@@ -288,11 +290,13 @@ impl Shape {
             },
             Event::End(ref e) => {
                 if  e.name().local_name().into_inner() == b"shape" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "v:shape")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find v:shape end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

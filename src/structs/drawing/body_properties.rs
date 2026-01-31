@@ -4,6 +4,8 @@ use super::super::Int32Value;
 use super::ShapeAutoFit;
 use super::TextWrappingValues;
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::writer::driver::*;
 use crate::BooleanValue;
 use crate::StringValue;
@@ -160,7 +162,7 @@ impl BodyProperties {
         reader: &mut Reader<R>,
         e: &BytesStart,
         empty_flag: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         for attr in e.attributes().with_checks(false) {
             if let Ok(attr) = attr {
                 let key = attr.key.into_inner();
@@ -205,10 +207,10 @@ impl BodyProperties {
         }
 
         if empty_flag {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"spAutoFit" {
@@ -219,10 +221,12 @@ impl BodyProperties {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"bodyPr" {
-                     return
+                     return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:bodyPr")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:bodyPr end element".into()
+            ))
         );
     }
 

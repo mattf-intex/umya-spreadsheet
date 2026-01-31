@@ -7,7 +7,9 @@ use super::TextBody;
 use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
 use crate::StringValue;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -113,27 +115,27 @@ impl Shape {
         reader: &mut Reader<R>,
         e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, r#macro, "macro");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
                 Event::Start(ref e) => {
                     match e.name().local_name().into_inner() {
                         b"nvSpPr" => {
-                            self.non_visual_shape_properties.set_attributes(reader, e);
+                            self.non_visual_shape_properties.set_attributes(reader, e)?;
                         }
                         b"spPr" => {
-                            self.shape_properties.set_attributes(reader, e, drawing_relationships);
+                            self.shape_properties.set_attributes(reader, e, drawing_relationships)?;
                         }
                         b"style" => {
                             let mut obj = ShapeStyle::default();
-                            obj.set_attributes(reader, e);
+                            obj.set_attributes(reader, e)?;
                             self.set_shape_style(obj);
                         }
                         b"txBody" => {
                             let mut obj = TextBody::default();
-                            obj.set_attributes(reader, e);
+                            obj.set_attributes(reader, e)?;
                             self.set_text_body(obj);
                         }
                         _ => (),
@@ -141,11 +143,13 @@ impl Shape {
                 },
                 Event::End(ref e) => {
                     if e.name().local_name().into_inner() == b"sp" {
-                        return;
+                        return Ok(());
                     }
                 },
-                Event::Eof => panic!("Error: Could not find {} end element", "xdr:sp")
-        );
+                Event::Eof => return Err(XlsxError::XmlParse(
+                    "Could not find xdr:sp end element".into()
+                ))
+        )
     }
 
     pub(crate) fn write_to(

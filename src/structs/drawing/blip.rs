@@ -1,6 +1,8 @@
 // a:blip
 use crate::helper::const_str::*;
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::structs::raw::RawRelationships;
 use crate::structs::MediaObject;
 use crate::writer::driver::*;
@@ -49,7 +51,7 @@ impl Blip {
         e: &BytesStart,
         drawing_relationships: &RawRelationships,
         empty_flag: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         if let Some(v) = get_attribute(e, b"cstate") {
             self.set_cstate(v);
         }
@@ -62,17 +64,19 @@ impl Blip {
             .set_image_data(relationship.get_raw_file().get_file_data());
 
         if empty_flag {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"blip" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:blip")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:blip end element".into()
+            ))
         );
     }
 

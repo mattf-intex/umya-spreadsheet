@@ -3,6 +3,8 @@ use super::NonVisualDrawingProperties;
 use super::NonVisualPictureDrawingProperties;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -54,18 +56,18 @@ impl NonVisualPictureProperties {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"cNvPicPr" => {
                         self.non_visual_picture_drawing_properties
-                            .set_attributes(reader, e, false);
+                            .set_attributes(reader, e, false)?;
                         }
                     b"cNvPr" => {
                         self.non_visual_drawing_properties
-                            .set_attributes(reader, e, false);
+                            .set_attributes(reader, e, false)?;
                         }
                     _ => (),
                 }
@@ -74,22 +76,24 @@ impl NonVisualPictureProperties {
                 match e.name().local_name().into_inner() {
                     b"cNvPicPr" => {
                         self.non_visual_picture_drawing_properties
-                            .set_attributes(reader, e, true);
+                            .set_attributes(reader, e, true)?;
                         }
                     b"cNvPr" => {
                         self.non_visual_drawing_properties
-                            .set_attributes(reader, e, true);
+                            .set_attributes(reader, e, true)?;
                         }
                     _ => (),
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"nvPicPr" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:nvPicPr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:nvPicPr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

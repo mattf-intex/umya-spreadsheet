@@ -1,5 +1,7 @@
 // a:extLst
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::writer::driver::*;
 use quick_xml::events::BytesStart;
 use quick_xml::events::Event;
@@ -15,15 +17,17 @@ impl ExtensionList {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"extLst" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:extLst")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:extLst end element".into()
+            ))
         );
     }
 

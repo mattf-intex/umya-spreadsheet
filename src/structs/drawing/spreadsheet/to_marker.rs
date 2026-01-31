@@ -1,4 +1,5 @@
 // xdr:to
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -89,7 +90,7 @@ impl ToMarker {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         let mut string_value: String = String::new();
         let mut buf = Vec::new();
         loop {
@@ -108,11 +109,15 @@ impl ToMarker {
                     b"rowOff" => {
                         self.row_off = string_value.parse::<usize>().unwrap();
                     }
-                    b"to" => return,
+                    b"to" => return Ok(()),
                     _ => (),
                 },
-                Ok(Event::Eof) => panic!("Error: Could not find {} end element", "xdr:to"),
-                Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+                Ok(Event::Eof) => {
+                    return Err(XlsxError::XmlParse(
+                        "Could not find xdr:to end element".into(),
+                    ))
+                }
+                Err(e) => return Err(e.into()),
                 _ => (),
             }
             buf.clear();

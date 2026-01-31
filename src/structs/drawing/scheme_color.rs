@@ -5,6 +5,8 @@ use super::PositiveFixedPercentageType;
 use super::SchemeColorValues;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -172,14 +174,14 @@ impl SchemeColor {
         reader: &mut Reader<R>,
         e: &BytesStart,
         empty_flag: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         self.val.set_value_string(get_attribute(e, b"val").unwrap());
 
         if empty_flag {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -273,11 +275,13 @@ impl SchemeColor {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"schemeClr" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:schemeClr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:schemeClr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

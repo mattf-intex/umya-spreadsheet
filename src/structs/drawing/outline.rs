@@ -10,6 +10,8 @@ use super::SolidFill;
 use super::SystemColor;
 use super::TailEnd;
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::structs::EnumValue;
 use crate::structs::UInt32Value;
 use crate::writer::driver::*;
@@ -227,7 +229,7 @@ impl Outline {
         &mut self,
         reader: &mut Reader<R>,
         e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         if let Some(v) = get_attribute(e, b"w") {
             self.set_width(v.parse::<u32>().unwrap());
         }
@@ -242,7 +244,7 @@ impl Outline {
 
         set_string_from_xml!(self, e, alignment, "algn");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
@@ -336,10 +338,12 @@ impl Outline {
             },
             Event::End(ref e) => {
                 if  e.name().local_name().into_inner() == b"ln" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:ln")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:ln end element".into()
+            ))
         );
     }
 

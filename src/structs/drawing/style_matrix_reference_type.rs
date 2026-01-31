@@ -2,6 +2,8 @@
 use super::SchemeColor;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -39,48 +41,50 @@ impl StyleMatrixReferenceType {
         reader: &mut Reader<R>,
         e: &BytesStart,
         empty_flag: bool,
-    ) {
+    ) -> Result<(), XlsxError> {
         self.set_index(get_attribute(e, b"idx").unwrap());
 
         if empty_flag {
-            return;
+            return Ok(());
         }
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 if e.name().local_name().into_inner() == b"schemeClr" {
                     let mut scheme_color = SchemeColor::default();
-                    scheme_color.set_attributes(reader, e, false);
+                    scheme_color.set_attributes(reader, e, false)?;
                     self.set_scheme_color(scheme_color);
                 }
             },
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"schemeClr" {
                     let mut scheme_color = SchemeColor::default();
-                    scheme_color.set_attributes(reader, e, true);
+                    scheme_color.set_attributes(reader, e, true)?;
                     self.set_scheme_color(scheme_color);
                 }
             },
             Event::End(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"lnRef" => {
-                        return;
+                        return Ok(());
                     }
                     b"fillRef" => {
-                        return;
+                        return Ok(());
                     }
                     b"effectRef" => {
-                        return;
+                        return Ok(());
                     }
                     b"fontRef" => {
-                        return;
+                        return Ok(());
                     }
                     _ => (),
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:lnRef")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:lnRef end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>, tag_name: &str) {

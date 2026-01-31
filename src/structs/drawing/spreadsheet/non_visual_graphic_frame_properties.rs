@@ -3,6 +3,8 @@ use super::NonVisualDrawingProperties;
 use super::NonVisualGraphicFrameDrawingProperties;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -61,14 +63,14 @@ impl NonVisualGraphicFrameProperties {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Empty(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"cNvPr" => {
                         self.non_visual_drawing_properties
-                            .set_attributes(reader, e, true);
+                            .set_attributes(reader, e, true)?;
                     },
                     b"cNvGraphicFramePr" => {
                         self.non_visual_graphic_frame_drawing_properties
@@ -80,16 +82,18 @@ impl NonVisualGraphicFrameProperties {
             Event::Start(ref e) => {
                 if e.name().local_name().into_inner() == b"cNvPr" {
                     self.non_visual_drawing_properties
-                        .set_attributes(reader, e, false);
+                        .set_attributes(reader, e, false)?;
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"nvGraphicFramePr" {
-                    return
+                    return Ok(())
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:nvGraphicFramePr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:nvGraphicFramePr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

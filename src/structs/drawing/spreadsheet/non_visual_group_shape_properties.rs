@@ -3,6 +3,8 @@ use super::NonVisualDrawingProperties;
 use super::NonVisualGroupShapeDrawingProperties;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -61,18 +63,18 @@ impl NonVisualGroupShapeProperties {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner(){
                     b"cNvPr" =>{
                         self.non_visual_drawing_properties
-                            .set_attributes(reader, e, false);
+                            .set_attributes(reader, e, false)?;
                     }
                     b"cNvGrpSpPr"=> {
                         self.non_visual_group_shape_drawing_properties
-                            .set_attributes(reader, e, false);
+                            .set_attributes(reader, e, false)?;
                     }
                     _=>()
                 }
@@ -81,22 +83,24 @@ impl NonVisualGroupShapeProperties {
                 match e.name().local_name().into_inner() {
                     b"cNvPr" =>{
                         self.non_visual_drawing_properties
-                        .set_attributes(reader, e, true);
+                        .set_attributes(reader, e, true)?;
                     }
                     b"cNvGrpSpPr" =>{
                         self.non_visual_group_shape_drawing_properties
-                        .set_attributes(reader, e, true);
+                        .set_attributes(reader, e, true)?;
                     }
                     _ => ()
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"nvGrpSpPr" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:nvGrpSpPr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:nvGrpSpPr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

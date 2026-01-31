@@ -2,6 +2,8 @@
 use super::super::StyleMatrixReferenceType;
 use crate::reader::driver::*;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -60,29 +62,29 @@ impl ShapeStyle {
         &mut self,
         reader: &mut Reader<R>,
         _e: &BytesStart,
-    ) {
-        xml_read_loop!(
+    ) -> Result<(), XlsxError> {
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"lnRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, false);
+                        style_matrix_reference_type.set_attributes(reader, e, false)?;
                         self.set_line_reference(style_matrix_reference_type);
                     }
                     b"fillRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, false);
+                        style_matrix_reference_type.set_attributes(reader, e, false)?;
                         self.set_fill_reference(style_matrix_reference_type);
                     }
                     b"effectRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, false);
+                        style_matrix_reference_type.set_attributes(reader, e, false)?;
                         self.set_effect_reference(style_matrix_reference_type);
                     }
                     b"fontRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, false);
+                        style_matrix_reference_type.set_attributes(reader, e, false)?;
                         self.set_font_reference(style_matrix_reference_type);
                     }
                     _ => (),
@@ -92,22 +94,22 @@ impl ShapeStyle {
                 match e.name().local_name().into_inner() {
                     b"lnRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, true);
+                        style_matrix_reference_type.set_attributes(reader, e, true)?;
                         self.set_line_reference(style_matrix_reference_type);
                     }
                     b"fillRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, true);
+                        style_matrix_reference_type.set_attributes(reader, e, true)?;
                         self.set_fill_reference(style_matrix_reference_type);
                     }
                     b"effectRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, true);
+                        style_matrix_reference_type.set_attributes(reader, e, true)?;
                         self.set_effect_reference(style_matrix_reference_type);
                     }
                     b"fontRef" => {
                         let mut style_matrix_reference_type = StyleMatrixReferenceType::default();
-                        style_matrix_reference_type.set_attributes(reader, e, true);
+                        style_matrix_reference_type.set_attributes(reader, e, true)?;
                         self.set_font_reference(style_matrix_reference_type);
                     }
                     _ => (),
@@ -115,11 +117,13 @@ impl ShapeStyle {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"style" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:style")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:style end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {

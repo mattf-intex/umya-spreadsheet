@@ -12,7 +12,9 @@ use crate::drawing::GradientFill;
 use crate::reader::driver::*;
 use crate::structs::raw::RawRelationships;
 use crate::writer::driver::*;
+use crate::xml_read_loop_result;
 use crate::EnumValue;
+use crate::XlsxError;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
 use quick_xml::Writer;
@@ -192,49 +194,49 @@ impl ShapeProperties {
         reader: &mut Reader<R>,
         e: &BytesStart,
         drawing_relationships: Option<&RawRelationships>,
-    ) {
+    ) -> Result<(), XlsxError> {
         set_string_from_xml!(self, e, black_white_mode, "bwMode");
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 match e.name().local_name().into_inner() {
                     b"xfrm" => {
                         let mut obj = Transform2D::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.set_transform2d(obj);
                     }
                     b"prstGeom" => {
-                        self.preset_geometry.set_attributes(reader, e);
+                        self.preset_geometry.set_attributes(reader, e)?;
                     }
                     b"blipFill" => {
                         let mut obj = BlipFill::default();
-                        obj.set_attributes(reader, e, drawing_relationships);
+                        obj.set_attributes(reader, e, drawing_relationships)?;
                         self.set_blip_fill(obj);
                     }
                     b"gradFill" => {
                         let mut obj = GradientFill::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.set_gradient_fill(obj);
                     }
                     b"ln" => {
                         let mut outline = Outline::default();
-                        outline.set_attributes(reader, e);
+                        outline.set_attributes(reader, e)?;
                         self.set_outline(outline);
                     }
                     b"solidFill" => {
                         let mut solid_fill = SolidFill::default();
-                        solid_fill.set_attributes(reader, e);
+                        solid_fill.set_attributes(reader, e)?;
                         self.set_solid_fill(solid_fill);
                     }
                     b"effectLst" => {
                         let mut effect_list = EffectList::default();
-                        effect_list.set_attributes(reader, e, false);
+                        effect_list.set_attributes(reader, e, false)?;
                         self.set_effect_list(effect_list);
                     }
                     b"extLst" => {
                         let mut obj = ExtensionList::default();
-                        obj.set_attributes(reader, e);
+                        obj.set_attributes(reader, e)?;
                         self.set_extension_list(obj);
                     }
                     _ => (),
@@ -243,17 +245,19 @@ impl ShapeProperties {
             Event::Empty(ref e) => {
                 if e.name().local_name().into_inner() == b"noFill" {
                     let mut obj = NoFill::default();
-                    obj.set_attributes(reader, e, true);
+                    obj.set_attributes(reader, e, true)?;
                     self.set_no_fill(obj);
                 }
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"spPr" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "xdr:spPr")
-        );
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find xdr:spPr end element".into()
+            ))
+        )
     }
 
     pub(crate) fn write_to(

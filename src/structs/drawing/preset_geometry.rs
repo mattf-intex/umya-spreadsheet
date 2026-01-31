@@ -1,6 +1,8 @@
 // a:prstGeom
 use super::adjust_value_list::AdjustValueList;
 use crate::reader::driver::*;
+use crate::xml_read_loop_result;
+use crate::XlsxError;
 use crate::writer::driver::*;
 use quick_xml::events::{BytesStart, Event};
 use quick_xml::Reader;
@@ -232,10 +234,10 @@ impl PresetGeometry {
         &mut self,
         reader: &mut Reader<R>,
         e: &BytesStart,
-    ) {
+    ) -> Result<(), XlsxError> {
         self.set_geometry(get_attribute(e, b"prst").unwrap());
 
-        xml_read_loop!(
+        xml_read_loop_result!(
             reader,
             Event::Start(ref e) => {
                 if e.name().local_name().into_inner() == b"avLst" {
@@ -244,10 +246,12 @@ impl PresetGeometry {
             },
             Event::End(ref e) => {
                 if e.name().local_name().into_inner() == b"prstGeom" {
-                    return;
+                    return Ok(());
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "a:prstGeom")
+            Event::Eof => return Err(XlsxError::XmlParse(
+                "Could not find a:prstGeom end element".into()
+            ))
         );
     }
 

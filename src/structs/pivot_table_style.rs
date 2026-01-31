@@ -108,12 +108,12 @@ impl PivotTableStyle {
             writer,
             "pivotTableStyleInfo",
             vec![
-                ("dataField", self.name.get_value_str()),
-                ("showAll", self.show_row_headers.get_value_string()),
-                ("showAll", self.show_column_headers.get_value_string()),
-                ("showAll", self.show_row_stripes.get_value_string()),
-                ("showAll", self.show_column_stripes.get_value_string()),
-                ("showAll", self.show_last_column.get_value_string()),
+                ("name", self.name.get_value_str()),
+                ("showRowHeaders", self.show_row_headers.get_value_string()),
+                ("showColHeaders", self.show_column_headers.get_value_string()),
+                ("showRowStripes", self.show_row_stripes.get_value_string()),
+                ("showColStripes", self.show_column_stripes.get_value_string()),
+                ("showLastColumn", self.show_last_column.get_value_string()),
             ],
             true,
         );

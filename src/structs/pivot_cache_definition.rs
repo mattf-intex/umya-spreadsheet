@@ -172,17 +172,17 @@ impl PivotCacheDefinition {
                 }
             },
             Event::End(ref e) => {
-                if e.name().local_name().into_inner() == b"pivotTableDefinition" {
+                if e.name().local_name().into_inner() == b"pivotCacheDefinition" {
                     return
                 }
             },
-            Event::Eof => panic!("Error: Could not find {} end element", "pivotTableDefinition")
+            Event::Eof => panic!("Error: Could not find {} end element", "pivotCacheDefinition")
         );
     }
 
     #[inline]
     pub(crate) fn write_to(&self, writer: &mut Writer<Cursor<Vec<u8>>>) {
-        // pivotTableDefinition
+        // pivotCacheDefinition
         let mut attributes: Vec<(&str, &str)> = Vec::new();
         attributes.push(("xmlns", SHEET_MAIN_NS));
         attributes.push(("xmlns:r", REL_OFC_NS));
@@ -217,7 +217,7 @@ impl PivotCacheDefinition {
             attributes.push(("recordCount", &record_count_str));
         }
 
-        write_start_tag(writer, "pivotTableDefinition", attributes, false);
+        write_start_tag(writer, "pivotCacheDefinition", attributes, false);
 
         // cacheSource
         self.cache_source.write_to(writer);
@@ -225,6 +225,6 @@ impl PivotCacheDefinition {
         // cacheFields
         self.cache_fields.write_to(writer);
 
-        write_end_tag(writer, "pivotTableDefinition");
+        write_end_tag(writer, "pivotCacheDefinition");
     }
 }

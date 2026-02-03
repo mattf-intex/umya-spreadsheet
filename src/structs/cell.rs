@@ -394,7 +394,7 @@ impl Cell {
         let mut buf = Vec::new();
         loop {
             match reader.read_event_into(&mut buf) {
-                Ok(Event::Text(e)) => string_value = e.unescape().unwrap().to_string(),
+                Ok(Event::Text(e)) => string_value.push_str(&e.unescape().unwrap()),
                 Ok(Event::Start(ref e)) => match e.name().local_name().into_inner() {
                     b"f" => {
                         let mut obj = CellFormula::default();
